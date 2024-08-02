@@ -1,0 +1,6 @@
+#menu {
+    position: absolute;
+    background-color: white;
+    border: 2px inset gray;
+    z-index: 1;
+}

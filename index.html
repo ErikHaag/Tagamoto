@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Tagamoto</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+</head>
+<body>
+    <img src="car.png" id="carImg" hidden>
+    <img src="cross.png" id="crossImg" hidden>
+    <img src="straight.png" id="straightImg" hidden>
+    <img src="tee.png" id="teeImg" hidden>
+    <img src="turn.png" id="turnImg" hidden>
+    <div id="menu" hidden>
+        <label for="type">Track piece</label>
+        <select id="type">
+            <option value="empty" selected>Empty</option>
+            <option value="straight">Straight</option>
+            <option value="turn">Turn</option>
+            <option value="tee">Tee</option>
+            <option value="cross">Cross</option>
+        </select><br>
+        <label for="rotation">Rotation</label>
+        <select id="rotation">
+            <option value="0" selected>0&deg;</option>
+            <option value="1">90&deg;</option>
+            <option value="2">180&deg;</option>
+            <option value="3">270&deg;</option>
+        </select>
+        <p>Tags</p>
+        <label for="northTag">North</label>
+        <select id="northTag">
+            <option value="none" selected>None</option>
+            <optgroup label="Timed">
+                <option value="speed">Speeding</option>
+                <option value="stop">Stop</option>
+            </optgroup>
+            <optgroup label="Navigation">
+                <option value="left">Prefer Left Turns</option>
+                <option value="straight">Prefer Not Turning</option>
+                <option value="right">Prefer Right Turns</option>
+            </optgroup>
+        </select><br>
+        <label for="eastTag">East</label>
+        <select id="eastTag">
+        </select><br>
+        <label for="southTag">South</label>
+        <select id="southTag">
+        </select><br>
+        <label for="westTag">West</label>
+        <select id="westTag">
+        </select>
+    </div>
+    <table>
+        <tr>
+            <td>
+                <canvas width="800" height="800" id="grid"></canvas>
+            </td>
+            <td>
+                <button id="resetCamera">Reset Camera</button><br>
+                <button id="left">Left</button>
+                <button id="straight">Straight</button>
+                <button id="right">Right</button>
+            </td>
+        </tr>
+    </table>
+</body>
+<script src="main.js"></script>
+<script src="events.js"></script>
+</html>
