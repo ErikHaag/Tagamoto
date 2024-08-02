@@ -1,3 +1,15 @@
+const trackTypeSelect = document.getElementById("type");
+const trackRotationSelect = document.getElementById("rotation");
+const northTagSelect = document.getElementById("northTag");
+const eastTagSelect = document.getElementById("eastTag");
+const southTagSelect = document.getElementById("southTag");
+const westTagSelect = document.getElementById("westTag");
+const resetCameraButton = document.getElementById("resetCamera");
+const resetCarButton = document.getElementById("resetCar");
+const rightButton = document.getElementById("right");
+const straightButton = document.getElementById("straight");
+const leftButton = document.getElementById("left");
+
 canvas.addEventListener("mousedown", (e) => {
     mouseDownX = e.offsetX;
     mouseDownY = e.offsetY;
@@ -60,6 +72,10 @@ resetCameraButton.addEventListener("click", () => {
     selecting = false;
     drawUI();
 });
+
+resetCarButton.addEventListener("click", () => {
+    resetCar();
+})
 
 rightButton.addEventListener("click", () => {
     turning = "right";

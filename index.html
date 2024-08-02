@@ -13,6 +13,10 @@
     <img src="straight.png" id="straightImg" hidden>
     <img src="tee.png" id="teeImg" hidden>
     <img src="turn.png" id="turnImg" hidden>
+    <p>
+        click on a grid square to place some track<br>
+        drag and release to move your view
+    </p>
     <div id="menu" hidden>
         <label for="type">Track piece</label>
         <select id="type">
@@ -59,7 +63,8 @@
                 <canvas width="800" height="800" id="grid"></canvas>
             </td>
             <td>
-                <button id="resetCamera">Reset Camera</button><br>
+                <button id="resetCamera">Reset Camera</button>
+                <button id="resetCar">Reset Car</button><br>
                 <button id="left">Left</button>
                 <button id="straight">Straight</button>
                 <button id="right">Right</button>
