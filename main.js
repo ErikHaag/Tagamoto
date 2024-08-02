@@ -289,8 +289,8 @@ function drawUI() {
         return;
     }
     let boundingRect = canvas.getBoundingClientRect();
-    gSX = Number(gSX) + boundingRect.left - window.scrollX;
-    gSY = Number(gSY) + boundingRect.top - window.scrollY;
+    gSX = Number(gSX) + boundingRect.left + window.scrollX;
+    gSY = Number(gSY) + boundingRect.top + window.scrollY;
     menuDiv.style.left = gSX + "px";
     menuDiv.style.top = gSY + "px";
     menuDiv.hidden = false;
