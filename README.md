@@ -3,4 +3,4 @@ Motorized cars would follow a track for which stickers with barcodes (the tags) 
 an onboard computer would read the barcode and preform the associated action, such as changing speeds, playing sounds, or turning on the headlights.
 This is a simulation of said toy with more features to come, hopefully you enjoy it as much as I did.
 
-(https://erikhaag.github.io/Tagamoto/)[https://erikhaag.github.io/Tagamoto/]
+[https://erikhaag.github.io/Tagamoto/](https://erikhaag.github.io/Tagamoto/)
