@@ -18,6 +18,10 @@ const images = {
 };
 
 const menuDiv = document.getElementById("menu");
+const northTagSelect = document.getElementById("northTag");
+const eastTagSelect = document.getElementById("eastTag");
+const southTagSelect = document.getElementById("southTag");
+const westTagSelect = document.getElementById("westTag");
 const canvas = document.getElementById("grid");
 const contex = canvas.getContext("2d", { alpha: false });
 
