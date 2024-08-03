@@ -9,20 +9,6 @@ const trackConnections = {
     turn: [2n, 3n]
 }
 
-const images = {
-    car: document.getElementById("carImg"),
-    cross: document.getElementById("crossImg"),
-    straight: document.getElementById("straightImg"),
-    tee: document.getElementById("teeImg"),
-    turn: document.getElementById("turnImg")
-};
-
-const menuDiv = document.getElementById("menu");
-const northTagSelect = document.getElementById("northTag");
-const eastTagSelect = document.getElementById("eastTag");
-const southTagSelect = document.getElementById("southTag");
-const westTagSelect = document.getElementById("westTag");
-const canvas = document.getElementById("grid");
 const contex = canvas.getContext("2d", { alpha: false });
 
 let turning = "straight";
@@ -105,6 +91,52 @@ function loop() {
         contex.fillRect(gSX, gSY + 48, 3, 3);
         contex.fillRect(gSX + 48, gSY + 48, 3, 3);
     }
+    updateCar();
+    drawCar();
+    contex.resetTransform()
+    window.requestAnimationFrame(loop);
+}
+
+function drawRoads() {
+    for (const track of tracks) {
+        let x = 51n * track.x + 399n - cameraX;
+        let y = 51n * track.y + 399n - cameraY;
+        if (x < -25n || x > 825n || y < -25n || y > 825n) continue;
+        contex.translate(Number(x) + 0.5, Number(y) + 0.5);
+        contex.rotate(Number(track.rotation % 4n) * Math.PI / 2);
+        contex.translate(-0.5, -0.5);
+        contex.drawImage(images[track.type], -25, -25);
+        contex.resetTransform();
+        contex.fillStyle = "white";
+        contex.translate(Number(x), Number(y));
+        for (let i = 0n; i <= 3n; i++) {
+            if (track.tags[i] != "none") {
+                contex.fillRect(-25, 9, 8, 5);
+            }
+            contex.translate(0.5, 0.5);
+            contex.rotate(Math.PI / 2);
+            contex.translate(-0.5, -0.5);
+        }
+        contex.resetTransform();
+    }
+}
+
+function resetCar() {
+    carX = 0n;
+    carY = 0n;
+    carDir = 0n
+    carProgress = 50n;
+    turning = "straight";
+    stopTimer = 0n;
+    speedTimer = 0n;
+    carIndex = trackIndexOf(carX, carY);
+    if (carIndex == -1) {
+        tracks.unshift({ x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"] });
+        carIndex = 0n;
+    }
+}
+
+function updateCar() {
     let prevProgress = carProgress;
     if (stopTimer > 0n) {
         stopTimer--;
@@ -122,25 +154,7 @@ function loop() {
     }
     if (prevProgress < 50n && carProgress >= 50n) {
         //run over tag
-        switch (tracks[carIndex].tags[carDir]) {
-            case "stop":
-                stopTimer = 60n;
-                break;
-            case "speed":
-                speedTimer = 500n;
-                break;
-            case "left":
-                turning = "left";
-                break;
-            case "straight":
-                turning = "straight";
-                break;
-            case "right":
-                turning = "right";
-            case "none":
-            default:
-                break;
-        }
+        processTag();
     }
     if (carProgress >= 100n) {
         carProgress = 0n;
@@ -167,71 +181,72 @@ function loop() {
         } else {
             carDir = nextDir;
         }
-        let straight = carDir
-        let right = (carDir + 1n) % 4n;
-        let left = (carDir + 3n) % 4n;
-        let c = trackConnections[tracks[carIndex].type].map((v) => {
-            return (v + tracks[carIndex].rotation) % 4n;
-        });
-        let canGoStraight = c.includes(straight);
-        let canTurnRight = c.includes(right);
-        let canTurnLeft = c.includes(left);
-        if (turning == "right") {
-            if (canTurnRight) {
-                carTurning = 1n;
-            } else if (canGoStraight) {
-                carTurning = 0n;
-            } else {
-                carTurning = 3n;
+        updateTurning();
+    }
+}
+
+function processTag() {
+    switch (tracks[carIndex].tags[carDir]) {
+        case "stop":
+            stopTimer = 60n;
+            break;
+        case "speed":
+            speedTimer = 500n;
+            break;
+        case "left":
+            if (navTagEnable.checked) {
+                turning = "left";
             }
-        } else if (turning == "left") {
-            if (canTurnLeft) {
-                carTurning = 3n;
-            } else if (canGoStraight) {
-                carTurning = 0n;
-            } else {
-                carTurning = 1n;
+            break;
+        case "straight":
+            if (navTagEnable.checked) {
+                turning = "straight";
             }
+            break;
+        case "right":
+            if (navTagEnable.checked) {
+                turning = "right";
+            }
+            break;
+        case "none":
+        default:
+            break;
+    }
+}
+
+function updateTurning() {
+    let straight = modulus(carDir - tracks[carIndex].rotation, 4n);
+    let right = (straight + 1n) % 4n;
+    let left = (straight + 3n) % 4n;
+    let trackType = tracks[carIndex].type;
+    let c = trackConnections[trackType];
+    let canGoStraight = c.includes(straight);
+    let canTurnRight = c.includes(right);
+    let canTurnLeft = c.includes(left);
+    if (turning == "right") {
+        if (canTurnRight) {
+            carTurning = 1n;
+        } else if (canGoStraight) {
+            carTurning = 0n;
         } else {
-            if (canGoStraight) {
-                carTurning = 0n;
-            } else if (canTurnRight) {
-                carTurning = 1n;
-            } else {
-                carTurning = 3n;
-            }
+            carTurning = 3n;
         }
-    }
-    drawCar();
-    contex.resetTransform()
-    window.requestAnimationFrame(loop);
-}
-
-function drawRoads() {
-    for (const track of tracks) {
-        let x = 51n * track.x + 399n - cameraX;
-        let y = 51n * track.y + 399n - cameraY;
-        if (x < -25n || x > 825n || y < -25n || y > 825n) continue;
-        contex.translate(Number(x) + 0.5, Number(y) + 0.5);
-        contex.rotate(Number(track.rotation % 4n) * Math.PI / 2);
-        contex.translate(-0.5, -0.5);
-        contex.drawImage(images[track.type], -25, -25);
-        contex.resetTransform();
-    }
-}
-
-function resetCar() {
-    carX = 0n;
-    carY = 0n;
-    carDir = 0n
-    carProgress = 50n;
-    turning = "straight";
-    stopTimer = 0n;
-    speedTimer = 0n;
-    carIndex = trackIndexOf(carX, carY);
-    if (carIndex == -1) {
-        tracks.unshift({ x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"] });
-        carIndex = 0n;
+    } else if (turning == "left") {
+        if (canTurnLeft) {
+            carTurning = 3n;
+        } else if (canGoStraight) {
+            carTurning = 0n;
+        } else {
+            carTurning = 1n;
+        }
+    } else {
+        if (canGoStraight) {
+            carTurning = 0n;
+        } else if (canTurnRight) {
+            carTurning = 1n;
+        } else {
+            carTurning = 3n;
+        }
     }
 }
 
@@ -275,10 +290,10 @@ function modifyTracks() {
     } else {
         trackRotationSelect.value = "0";
     }
-    drawUI();
+    drawTrackDialog();
 }
 
-function drawUI() {
+function drawTrackDialog() {
     let gSX = 51n * selectX + 374n - cameraX
     let gSY = 51n * selectY + 425n - cameraY
     if (gSX < 0n || gSX > 800n || gSY < 0n || gSY > 800n) {

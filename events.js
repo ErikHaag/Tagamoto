@@ -1,11 +1,3 @@
-const trackTypeSelect = document.getElementById("type");
-const trackRotationSelect = document.getElementById("rotation");
-const resetCameraButton = document.getElementById("resetCamera");
-const resetCarButton = document.getElementById("resetCar");
-const rightButton = document.getElementById("right");
-const straightButton = document.getElementById("straight");
-const leftButton = document.getElementById("left");
-
 canvas.addEventListener("mousedown", (e) => {
     mouseDownX = e.offsetX;
     mouseDownY = e.offsetY;
@@ -46,12 +38,12 @@ canvas.addEventListener("mouseup", (e) => {
         cameraY += offY;
     }
     e.stopPropagation();
-    drawUI();
+    drawTrackDialog();
 });
 
 document.addEventListener("mouseup", () => {
     selecting = false;
-    drawUI();
+    drawTrackDialog();
 });
 
 menuDiv.addEventListener("mousedown", (e) => {
@@ -66,7 +58,7 @@ resetCameraButton.addEventListener("click", () => {
     cameraX = 0n;
     cameraY = 0n;
     selecting = false;
-    drawUI();
+    drawTrackDialog();
 });
 
 resetCarButton.addEventListener("click", () => {
