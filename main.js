@@ -9,7 +9,7 @@ const trackConnections = {
     turn: [2n, 3n]
 }
 
-const contex = canvas.getContext("2d", { alpha: false });
+const contex = canvas.getContext("2d");
 
 let turning = "straight";
 let carX = 0n;
@@ -19,8 +19,12 @@ let carDir = 0n;
 let carTurning = 0n;
 let carProgress = 50n;
 
+// timers
 let stopTimer = 0n;
 let speedTimer = 0n;
+
+// booleans
+let headlights = false;
 
 let cameraX = 0n;
 let cameraY = 0n;
@@ -36,6 +40,7 @@ function setup() {
     eastTagSelect.innerHTML = northTagSelect.innerHTML;
     southTagSelect.innerHTML = northTagSelect.innerHTML;
     westTagSelect.innerHTML = northTagSelect.innerHTML;
+    updateUI("all");
     window.requestAnimationFrame(loop);
 }
 
@@ -86,6 +91,7 @@ function loop() {
     }
     drawRoads();
     if (selecting) {
+        contex.fillStyle = "red";
         contex.fillRect(gSX, gSY, 3, 3);
         contex.fillRect(gSX + 48, gSY, 3, 3);
         contex.fillRect(gSX, gSY + 48, 3, 3);
@@ -127,8 +133,10 @@ function resetCar() {
     carDir = 0n
     carProgress = 50n;
     turning = "straight";
+    updateUI("carControls");
     stopTimer = 0n;
     speedTimer = 0n;
+    headlights = false;
     carIndex = trackIndexOf(carX, carY);
     if (carIndex == -1) {
         tracks.unshift({ x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"] });
@@ -196,17 +204,26 @@ function processTag() {
         case "left":
             if (navTagEnable.checked) {
                 turning = "left";
+                updateUI("carControls");
             }
             break;
         case "straight":
             if (navTagEnable.checked) {
                 turning = "straight";
+                updateUI("carControls");
             }
             break;
         case "right":
             if (navTagEnable.checked) {
                 turning = "right";
+                updateUI("carControls");
             }
+            break;
+        case "headlightsOn":
+            headlights = true;
+            break;
+        case "headlightsOff":
+            headlights = false;
             break;
         case "none":
         default:
@@ -270,6 +287,9 @@ function drawCar() {
         contex.translate(0, 36);
     }
     contex.drawImage(images.car, -10, -7);
+    if (headlights) {
+        contex.drawImage(images.light, 10, -7);
+    }
 }
 
 function modifyTracks() {
@@ -290,25 +310,40 @@ function modifyTracks() {
     } else {
         trackRotationSelect.value = "0";
     }
-    drawTrackDialog();
+    updateUI("trackDialog");
 }
 
-function drawTrackDialog() {
-    let gSX = 51n * selectX + 374n - cameraX
-    let gSY = 51n * selectY + 425n - cameraY
-    if (gSX < 0n || gSX > 800n || gSY < 0n || gSY > 800n) {
-        selecting = false;
+function updateUI(...sections) {
+    for (const s of sections) {
+        let updateOne = s != "all";
+        switch (s) {
+            case "all":
+            case "carControls":
+                leftButton.className = turning == "left" ? "highlight" : "";
+                straightButton.className = turning == "straight" ? "highlight" : "";
+                rightButton.className = turning == "right" ? "highlight" : "";
+                if (updateOne) break;
+            case "trackDialog":
+                let gSX = 51n * selectX + 374n - cameraX
+                let gSY = 51n * selectY + 425n - cameraY
+                if (gSX < 0n || gSX > 800n || gSY < 0n || gSY > 800n) {
+                    selecting = false;
+                }
+                if (selecting) {
+                    let boundingRect = canvas.getBoundingClientRect();
+                    gSX = Number(gSX) + boundingRect.left + window.scrollX;
+                    gSY = Number(gSY) + boundingRect.top + window.scrollY;
+                    menuDiv.style.left = gSX + "px";
+                    menuDiv.style.top = gSY + "px";
+                }
+                menuDiv.hidden = !selecting;
+            default:
+                break;
+        }
+        if (!updateOne) {
+            break;
+        }
     }
-    if (!selecting) {
-        menuDiv.hidden = true;
-        return;
-    }
-    let boundingRect = canvas.getBoundingClientRect();
-    gSX = Number(gSX) + boundingRect.left + window.scrollX;
-    gSY = Number(gSY) + boundingRect.top + window.scrollY;
-    menuDiv.style.left = gSX + "px";
-    menuDiv.style.top = gSY + "px";
-    menuDiv.hidden = false;
 }
 
 setup();

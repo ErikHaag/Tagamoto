@@ -4,3 +4,7 @@
     border: 2px inset gray;
     z-index: 1;
 }
+
+.highlight {
+    border-bottom: 5px solid red;
+}

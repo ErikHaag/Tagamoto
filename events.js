@@ -38,12 +38,12 @@ canvas.addEventListener("mouseup", (e) => {
         cameraY += offY;
     }
     e.stopPropagation();
-    drawTrackDialog();
+    updateUI("trackDialog");
 });
 
 document.addEventListener("mouseup", () => {
     selecting = false;
-    drawTrackDialog();
+    updateUI("trackDialog");
 });
 
 menuDiv.addEventListener("mousedown", (e) => {
@@ -58,7 +58,7 @@ resetCameraButton.addEventListener("click", () => {
     cameraX = 0n;
     cameraY = 0n;
     selecting = false;
-    drawTrackDialog();
+    updateUI("trackDialog");
 });
 
 resetCarButton.addEventListener("click", () => {
@@ -67,14 +67,17 @@ resetCarButton.addEventListener("click", () => {
 
 rightButton.addEventListener("click", () => {
     turning = "right";
+    updateUI("carControls");
 });
 
 straightButton.addEventListener("click", () => {
     turning = "straight";
+    updateUI("carControls");
 });
 
 leftButton.addEventListener("click", () => {
     turning = "left";
+    updateUI("carControls");
 });
 
 trackTypeSelect.addEventListener("change", () => {

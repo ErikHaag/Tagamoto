@@ -1,6 +1,7 @@
 const images = {
     car: document.getElementById("carImg"),
     cross: document.getElementById("crossImg"),
+    light: document.getElementById("lightImg"),
     straight: document.getElementById("straightImg"),
     tee: document.getElementById("teeImg"),
     turn: document.getElementById("turnImg")
