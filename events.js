@@ -105,38 +105,34 @@ westTagSelect.addEventListener("change", () => {
 });
 
 moveUp.addEventListener("click", () => {
-    tracks = tracks.map((t) => {
-        t.y--;
-        return t;
-    })
+    for (let i in tracks) {
+        tracks[i].y--;
+    }
 });
 
 moveLeft.addEventListener("click", () => {
-    tracks = tracks.map((t) => {
-        t.x--;
-        return t;
-    })
+    for (let i in tracks) {
+        tracks[i].x--;
+    }
 });
 
 turnClockwise.addEventListener("click", () => {
-    tracks = tracks.map((t) => {
-        [t.x, t.y] = [-t.y, t.x];
-        t.rotation++;
-        t.rotation %= 4n;
-        return t;
-    })
+    for (let i in tracks) {
+        let x = tracks[i].x;
+        tracks[i].x = -tracks[i].y;
+        tracks[i].y = x;
+        tracks[i].rotation = (tracks[i].rotation + 1n) % 4n;
+    }
 });
 
 moveRight.addEventListener("click", () => {
-    tracks = tracks.map((t) => {
-        t.x++;
-        return t;
-    })
+    for (let i in tracks) {
+        tracks[i].x++;
+    }
 });
 
 moveDown.addEventListener("click", () => {
-    tracks = tracks.map((t) => {
-        t.y++;
-        return t;
-    })
+    for (let i in tracks) {
+        tracks[i].y++;
+    }
 });
