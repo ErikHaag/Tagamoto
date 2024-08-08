@@ -103,3 +103,40 @@ southTagSelect.addEventListener("change", () => {
 westTagSelect.addEventListener("change", () => {
     modifyTracks();
 });
+
+moveUp.addEventListener("click", () => {
+    tracks = tracks.map((t) => {
+        t.y--;
+        return t;
+    })
+});
+
+moveLeft.addEventListener("click", () => {
+    tracks = tracks.map((t) => {
+        t.x--;
+        return t;
+    })
+});
+
+turnClockwise.addEventListener("click", () => {
+    tracks = tracks.map((t) => {
+        [t.x, t.y] = [-t.y, t.x];
+        t.rotation++;
+        t.rotation %= 4n;
+        return t;
+    })
+});
+
+moveRight.addEventListener("click", () => {
+    tracks = tracks.map((t) => {
+        t.x++;
+        return t;
+    })
+});
+
+moveDown.addEventListener("click", () => {
+    tracks = tracks.map((t) => {
+        t.y++;
+        return t;
+    })
+});

@@ -8,6 +8,7 @@ const images = {
 };
 
 const menuDiv = document.getElementById("menu");
+const selectedCoordinatesP = document.getElementById("selectedCoords");
 const northTagSelect = document.getElementById("northTag");
 const eastTagSelect = document.getElementById("eastTag");
 const southTagSelect = document.getElementById("southTag");
@@ -20,4 +21,10 @@ const resetCarButton = document.getElementById("resetCar");
 const rightButton = document.getElementById("right");
 const straightButton = document.getElementById("straight");
 const leftButton = document.getElementById("left");
+const driveEnable = document.getElementById("enableDrive")
 const navTagEnable = document.getElementById("enableNav");
+const moveUp = document.getElementById("moveUp");
+const moveLeft = document.getElementById("moveLeft");
+const turnClockwise = document.getElementById("turnClockwise");
+const moveRight = document.getElementById("moveRight");
+const moveDown = document.getElementById("moveDown");

@@ -145,6 +145,9 @@ function resetCar() {
 }
 
 function updateCar() {
+    if (!driveEnable.checked) {
+        return;
+    }
     let prevProgress = carProgress;
     if (stopTimer > 0n) {
         stopTimer--;
@@ -324,6 +327,7 @@ function updateUI(...sections) {
                 rightButton.className = turning == "right" ? "highlight" : "";
                 if (updateOne) break;
             case "trackDialog":
+                selectedCoordinatesP.innerText = "X: " + selectX + ", Y: " + selectY;
                 let gSX = 51n * selectX + 374n - cameraX
                 let gSY = 51n * selectY + 425n - cameraY
                 if (gSX < 0n || gSX > 800n || gSY < 0n || gSY > 800n) {

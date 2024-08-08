@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
@@ -8,6 +9,7 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
 </head>
+
 <body>
     <img src="car.png" id="carImg" hidden>
     <img src="light.png" id="lightImg" hidden>
@@ -20,6 +22,7 @@
         drag and release to move your view
     </p>
     <div id="menu" hidden>
+        <p id="selectedCoords"></p>
         <label for="type">Track piece</label>
         <select id="type">
             <option value="empty" selected>Empty</option>
@@ -64,29 +67,66 @@
         </select>
     </div>
     <table>
-        <tr>
-            <td>
-                <canvas width="800" height="800" id="grid"></canvas>
-            </td>
-            <td>
-                <fieldset>
-                    <legend>Resetting</legend>
-                    <button id="resetCamera">Reset Camera</button>
-                    <button id="resetCar">Reset Car</button>
-                </fieldset>
-                <fieldset>
-                    <legend>Car Controls</legend>
-                    <button id="left">Left</button>
-                    <button id="straight">Straight</button>
-                    <button id="right">Right</button><br>
-                    <label for="enableNav">Enable Navigation Tags</label>
-                    <input id="enableNav" type="checkbox" checked>
-                </fieldset>
-            </td>
-        </tr>
+        <tbody>
+            <tr>
+                <td>
+                    <canvas width="800" height="800" id="grid"></canvas>
+                </td>
+                <td>
+                    <fieldset>
+                        <legend>Resetting</legend>
+                        <button id="resetCamera">Reset Camera</button>
+                        <button id="resetCar">Reset Car</button>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Car Controls</legend>
+                        <button id="left">Left</button>
+                        <button id="straight">Straight</button>
+                        <button id="right">Right</button><br>
+                        <label for="enableMovement">Drive</label>
+                        <input id="enableDrive" type="checkbox" checked><br>
+                        <label for="enableNav">Enable Navigation Tags</label>
+                        <input id="enableNav" type="checkbox" checked>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Mass Transformation</legend>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button id="moveUp">&uparrow;</button>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="moveLeft">&leftarrow;</button>
+                                    </td>
+                                    <td>
+                                        <button id="turnClockwise">&curvearrowright;</button>
+                                    </td>
+                                    <td>
+                                        <button id="moveRight">&rightarrow;</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button id="movedown">&downarrow;</button>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </fieldset>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </body>
 <script src="elements.js"></script>
 <script src="main.js"></script>
 <script src="events.js"></script>
+
 </html>
