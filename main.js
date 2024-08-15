@@ -41,7 +41,8 @@ function setup() {
     southTagSelect.innerHTML = northTagSelect.innerHTML;
     westTagSelect.innerHTML = northTagSelect.innerHTML;
     updateUI("all");
-    window.requestAnimationFrame(loop);
+    setInterval(loop, 15);
+    window.requestAnimationFrame(draw);
 }
 
 function modulus(a, b) {
@@ -63,6 +64,10 @@ function trackIndexOf(x, y) {
 }
 
 function loop() {
+    updateCar();
+}
+
+function draw() {
     //set background
     contex.fillStyle = "white";
     contex.fillRect(0, 0, 800, 800);
@@ -97,10 +102,9 @@ function loop() {
         contex.fillRect(gSX, gSY + 48, 3, 3);
         contex.fillRect(gSX + 48, gSY + 48, 3, 3);
     }
-    updateCar();
     drawCar();
     contex.resetTransform()
-    window.requestAnimationFrame(loop);
+    window.requestAnimationFrame(draw);
 }
 
 function drawRoads() {
