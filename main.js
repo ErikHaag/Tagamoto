@@ -174,22 +174,7 @@ function updateCar() {
     if (carProgress >= 100n) {
         carProgress = 0n;
         let nextDir = (carDir + carTurning) % 4n;
-        switch (nextDir) {
-            case 0n:
-                carX++;
-                break;
-            case 1n:
-                carY++;
-                break;
-            case 2n:
-                carX--;
-                break;
-            case 3n:
-                carY--;
-                break;
-            default:
-                break;
-        }
+        [carX, carY] = headInDir(carX, carY, nextDir);
         carIndex = trackIndexOf(carX, carY);
         if (carIndex == -1) {
             resetCar();
@@ -197,6 +182,21 @@ function updateCar() {
             carDir = nextDir;
         }
         updateTurning();
+    }
+}
+
+function headInDir(x, y, dir) {
+    switch (dir) {
+        case 0n:
+            return [x + 1n, y];
+        case 1n:
+            return [x, y + 1n];
+        case 2n:
+            return [x - 1n, y];
+        case 3n:
+            return [x, y - 1n];
+        default:
+            return [x, y];
     }
 }
 
@@ -239,37 +239,55 @@ function processTag() {
 }
 
 function updateTurning() {
-    let straight = modulus(carDir - tracks[carIndex].rotation, 4n);
-    let right = (straight + 1n) % 4n;
-    let left = (straight + 3n) % 4n;
-    let trackType = tracks[carIndex].type;
-    let c = trackConnections[trackType];
-    let canGoStraight = c.includes(straight);
-    let canTurnRight = c.includes(right);
-    let canTurnLeft = c.includes(left);
-    if (turning == "right") {
-        if (canTurnRight) {
-            carTurning = 1n;
-        } else if (canGoStraight) {
-            carTurning = 0n;
-        } else {
-            carTurning = 3n;
+    if (turnQueue.length > 0) {
+        turning = turnQueue.shift()
+        switch (turning) {
+            case "right":
+                carTurning = 1n;
+                break;
+            case "straight":
+                carTurning = 0n;
+                break;
+            case "left":
+                carTurning = 3n;
+                break;
+            default:
+                break;
         }
-    } else if (turning == "left") {
-        if (canTurnLeft) {
-            carTurning = 3n;
-        } else if (canGoStraight) {
-            carTurning = 0n;
-        } else {
-            carTurning = 1n;
-        }
+        updateUI("carControls");
     } else {
-        if (canGoStraight) {
-            carTurning = 0n;
-        } else if (canTurnRight) {
-            carTurning = 1n;
+        let straight = modulus(carDir - tracks[carIndex].rotation, 4n);
+        let right = (straight + 1n) % 4n;
+        let left = (straight + 3n) % 4n;
+        let trackType = tracks[carIndex].type;
+        let c = trackConnections[trackType];
+        let canGoStraight = c.includes(straight);
+        let canTurnRight = c.includes(right);
+        let canTurnLeft = c.includes(left);
+        if (turning == "right") {
+            if (canTurnRight) {
+                carTurning = 1n;
+            } else if (canGoStraight) {
+                carTurning = 0n;
+            } else {
+                carTurning = 3n;
+            }
+        } else if (turning == "left") {
+            if (canTurnLeft) {
+                carTurning = 3n;
+            } else if (canGoStraight) {
+                carTurning = 0n;
+            } else {
+                carTurning = 1n;
+            }
         } else {
-            carTurning = 3n;
+            if (canGoStraight) {
+                carTurning = 0n;
+            } else if (canTurnRight) {
+                carTurning = 1n;
+            } else {
+                carTurning = 3n;
+            }
         }
     }
 }
