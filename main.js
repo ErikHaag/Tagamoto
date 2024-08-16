@@ -137,6 +137,7 @@ function resetCar() {
     carDir = 0n
     carProgress = 50n;
     turning = "straight";
+    turnQueue = [];
     updateUI("carControls");
     stopTimer = 0n;
     speedTimer = 0n;
@@ -226,6 +227,9 @@ function processTag() {
                 updateUI("carControls");
             }
             break;
+        case "returnToOrigin": 
+            navigateTo(0n, 0n);
+            break;
         case "headlightsOn":
             headlights = true;
             break;
@@ -239,7 +243,7 @@ function processTag() {
 }
 
 function updateTurning() {
-    if (turnQueue.length > 0) {
+    if (turnQueue.length > 1) {
         carTurning = turnQueue.shift()
         switch (carTurning) {
             case 1n:
@@ -254,6 +258,9 @@ function updateTurning() {
             default:
                 break;
         }
+        updateUI("carControls");
+    } else if (turnQueue.length == 1) {
+        turning = turnQueue.shift();
         updateUI("carControls");
     }
     let straight = modulus(carDir - tracks[carIndex].rotation, 4n);

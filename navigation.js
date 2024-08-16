@@ -26,7 +26,7 @@ function navigateTo(goalX, goalY, goalDir = -1n) {
         let currentA = keyToArray(current);
         if (currentA[0] == goalX && currentA[1] == goalY && (goalDir == -1n || currentA[2] == goalDir)) {
             // reconstruct
-            turnQueue = [carTurning];
+            turnQueue = [turning];
             let dir = currentA[2];
             while (comeFrom.has(current)) {
                 let previous = comeFrom.get(current);
