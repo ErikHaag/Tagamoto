@@ -240,54 +240,53 @@ function processTag() {
 
 function updateTurning() {
     if (turnQueue.length > 0) {
-        turning = turnQueue.shift()
-        switch (turning) {
-            case "right":
-                carTurning = 1n;
+        carTurning = turnQueue.shift()
+        switch (carTurning) {
+            case 1n:
+                turning = "right";
                 break;
-            case "straight":
-                carTurning = 0n;
+            case 0n:
+                turning = "straight";
                 break;
-            case "left":
-                carTurning = 3n;
+            case 3n:
+                turning = "left";
                 break;
             default:
                 break;
         }
         updateUI("carControls");
-    } else {
-        let straight = modulus(carDir - tracks[carIndex].rotation, 4n);
-        let right = (straight + 1n) % 4n;
-        let left = (straight + 3n) % 4n;
-        let trackType = tracks[carIndex].type;
-        let c = trackConnections[trackType];
-        let canGoStraight = c.includes(straight);
-        let canTurnRight = c.includes(right);
-        let canTurnLeft = c.includes(left);
-        if (turning == "right") {
-            if (canTurnRight) {
-                carTurning = 1n;
-            } else if (canGoStraight) {
-                carTurning = 0n;
-            } else {
-                carTurning = 3n;
-            }
-        } else if (turning == "left") {
-            if (canTurnLeft) {
-                carTurning = 3n;
-            } else if (canGoStraight) {
-                carTurning = 0n;
-            } else {
-                carTurning = 1n;
-            }
+    }
+    let straight = modulus(carDir - tracks[carIndex].rotation, 4n);
+    let right = (straight + 1n) % 4n;
+    let left = (straight + 3n) % 4n;
+    let trackType = tracks[carIndex].type;
+    let c = trackConnections[trackType];
+    let canGoStraight = c.includes(straight);
+    let canTurnRight = c.includes(right);
+    let canTurnLeft = c.includes(left);
+    if (turning == "right") {
+        if (canTurnRight) {
+            carTurning = 1n;
+        } else if (canGoStraight) {
+            carTurning = 0n;
         } else {
-            if (canGoStraight) {
-                carTurning = 0n;
-            } else if (canTurnRight) {
-                carTurning = 1n;
-            } else {
-                carTurning = 3n;
-            }
+            carTurning = 3n;
+        }
+    } else if (turning == "left") {
+        if (canTurnLeft) {
+            carTurning = 3n;
+        } else if (canGoStraight) {
+            carTurning = 0n;
+        } else {
+            carTurning = 1n;
+        }
+    } else {
+        if (canGoStraight) {
+            carTurning = 0n;
+        } else if (canTurnRight) {
+            carTurning = 1n;
+        } else {
+            carTurning = 3n;
         }
     }
 }

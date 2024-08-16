@@ -1,17 +1,18 @@
 let turnQueue = [];
 
-function navigateTo(goalX, goalY) {
+function navigateTo(goalX, goalY, goalDir = -1n) {
     turnQueue = [];
     //A* psuedocode from Wikipedia
-    let [startX, startY] = headInDir(carX, carY, (carDir + carTurning) % 4n);
-    let startKey = arrayToKey([startX, startY, (carDir + carTurning) % 4n]);
+    let startDir = (carDir + carTurning) % 4n;
+    let [startX, startY] = headInDir(carX, carY, startDir);
+    let startKey = arrayToKey([startX, startY, startDir]);
     let openSet = new Set();
     openSet.add(startKey);
     let comeFrom = new Map();
     let gScore = new Map();
     gScore.set(startKey, 0n);
     let fScore = new Map();
-    fScore.set(startKey, taxicabDistance(startX, startY, goalX, goalY));
+    fScore.set(startKey, taxicabDistance(startX, startY, startDir, goalX, goalY, goalDir));
     while (openSet.size > 0) {
         let current = "";
         let minF = -1n;
@@ -23,26 +24,15 @@ function navigateTo(goalX, goalY) {
             }
         }
         let currentA = keyToArray(current);
-        if (currentA[0] == goalX && currentA[1] == goalY) {
+        if (currentA[0] == goalX && currentA[1] == goalY && (goalDir == -1n || currentA[2] == goalDir)) {
             // reconstruct
+            turnQueue = [carTurning];
             let dir = currentA[2];
             while (comeFrom.has(current)) {
                 let previous = comeFrom.get(current);
                 let pDir = previous[2];
-                switch (modulus(dir - pDir, 4n)) {
-                    case 0n:
-                        turnQueue.unshift("straight");
-                        break;
-                    case 1n:
-                        turnQueue.unshift("right");
-                        break;
-                    case 3n:
-                        turnQueue.unshift("left");
-                        break;
-                    default:
-                        break;
-                }
-                dir = pDir
+                turnQueue.unshift(modulus(dir - pDir, 4n));
+                dir = pDir;
                 current = arrayToKey(previous);
             }
             return true;
@@ -67,7 +57,7 @@ function navigateTo(goalX, goalY) {
             if (!gScore.has(nextKey) || g < gScore.get(nextKey)) {
                 comeFrom.set(nextKey, currentA);
                 gScore.set(nextKey, g);
-                fScore.set(nextKey, g + taxicabDistance(nextX, nextY, goalX, goalY));
+                fScore.set(nextKey, g + taxicabDistance(nextX, nextY, nextDir, goalX, goalY, goalDir));
                 openSet.add(nextKey)
             }
         }
@@ -79,8 +69,13 @@ function absoluteValue(int) {
     return int >= 0n ? int : -int;
 }
 
-function taxicabDistance(startX, startY, goalX, goalY) {
-    return absoluteValue(goalX - startX) + absoluteValue(goalY - startY);
+function taxicabDistance(startX, startY, startDir, goalX, goalY, goalDir = -1n) {
+    if (goalDir == -1n) {
+        return absoluteValue(goalX - startX) + absoluteValue(goalY - startY);
+    } else {
+        let turnDiff = modulus(goalDir - startDir, 4n);
+        return absoluteValue(goalX - startX) + absoluteValue(goalY - startY) + (turnDiff == 3n ? 1n : turnDiff);
+    }
 }
 
 function keyToArray(key) {
