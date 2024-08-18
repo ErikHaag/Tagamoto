@@ -5,6 +5,12 @@
     z-index: 1;
 }
 
+#grid {
+    width: 80%;
+    aspect-ratio: 1;
+    touch-action: pinch-zoom;
+}
+
 .highlight {
     border-bottom: 5px solid red;
 }

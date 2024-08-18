@@ -40,6 +40,34 @@ let selectY = 0n;
 let selecting = false;
 
 function setup() {
+    let hasTouchScreen = navigator?.maxTouchPoints > 0 || navigator?.msMaxTouchPoints > 0;
+    if (hasTouchScreen && window.confirm("Touch screen detected,\nwould you like to use this?")) {
+        canvas.addEventListener("pointerdown", pointerDown);
+        canvas.addEventListener("pointerup", pointerUp);
+        document.addEventListener("pointerup", () => {
+            selecting = false;
+            updateUI("trackDialog");
+        });
+        menuDiv.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+        });
+        menuDiv.addEventListener("pointerup", (e) => {
+            e.stopPropagation();
+        });
+    } else {
+        canvas.addEventListener("mousedown", pointerDown);
+        canvas.addEventListener("mouseup", pointerUp);       
+        document.addEventListener("mouseup", () => {
+            selecting = false;
+            updateUI("trackDialog");
+        });     
+        menuDiv.addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        menuDiv.addEventListener("mouseup", (e) => {
+            e.stopPropagation();
+        });
+    }
     let options = document.getElementById("northTag").innerHTML
     for (let i = 0n; i < 3n; i++) {
         document.getElementById(directions[i] + "Tag").innerHTML = options;
@@ -398,8 +426,9 @@ function updateUI(...sections) {
                 }
                 if (selecting) {
                     let boundingRect = canvas.getBoundingClientRect();
-                    gSX = Number(gSX) + boundingRect.left + window.scrollX;
-                    gSY = Number(gSY) + boundingRect.top + window.scrollY;
+                    let s = boundingRect.width / 800;
+                    gSX = s * Number(gSX) + boundingRect.left + window.scrollX;
+                    gSY = s * Number(gSY) + boundingRect.top + window.scrollY;
                     menuDiv.style.left = gSX + "px";
                     menuDiv.style.top = gSY + "px";
                 }
@@ -429,4 +458,4 @@ function updateUI(...sections) {
     }
 }
 
-setup();
+document.addEventListener("DOMContentLoaded", setup);

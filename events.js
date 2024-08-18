@@ -1,16 +1,20 @@
-canvas.addEventListener("mousedown", (e) => {
+function pointerDown(e) {
+    console.log("pointer down!");
     mouseDownX = e.offsetX;
     mouseDownY = e.offsetY;
     mouseDownTime = document.timeline.currentTime;
-});
+}
 
-canvas.addEventListener("mouseup", (e) => {
-    let offX = BigInt(mouseDownX - e.offsetX);
-    let offY = BigInt(mouseDownY - e.offsetY);
+function pointerUp(e) {
+    console.log("pointer up!");
+    let s = 800 / canvas.getBoundingClientRect().width;
+    let offX = BigInt(Math.round(s * (mouseDownX - e.offsetX)));
+    let offY = BigInt(Math.round(s * (mouseDownY - e.offsetY)));
+    console.log(document.timeline.currentTime - mouseDownTime);
     if (offX ** 2n + offY ** 2n <= 100n && document.timeline.currentTime - mouseDownTime <= 500) {
         selecting = true;
-        let x = BigInt(e.offsetX) + cameraX - 374n;
-        let y = BigInt(e.offsetY) + cameraY - 374n;
+        let x = BigInt(Math.round(s * e.offsetX)) + cameraX - 374n;
+        let y = BigInt(Math.round(s * e.offsetY)) + cameraY - 374n;
         x -= modulus(x, 51n);
         y -= modulus(y, 51n);
         x /= 51n;
@@ -52,20 +56,7 @@ canvas.addEventListener("mouseup", (e) => {
     }
     e.stopPropagation();
     updateUI("trackDialog", "specialTagMenus");
-});
-
-document.addEventListener("mouseup", () => {
-    selecting = false;
-    updateUI("trackDialog");
-});
-
-menuDiv.addEventListener("mousedown", (e) => {
-    e.stopPropagation();
-});
-
-menuDiv.addEventListener("mouseup", (e) => {
-    e.stopPropagation();
-});
+}
 
 resetCameraButton.addEventListener("click", () => {
     cameraX = 0n;
