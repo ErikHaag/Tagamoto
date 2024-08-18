@@ -1,12 +1,10 @@
 function pointerDown(e) {
-    console.log("pointer down!");
     mouseDownX = e.offsetX;
     mouseDownY = e.offsetY;
     mouseDownTime = document.timeline.currentTime;
 }
 
 function pointerUp(e) {
-    console.log("pointer up!");
     let s = 800 / canvas.getBoundingClientRect().width;
     let offX = BigInt(Math.round(s * (mouseDownX - e.offsetX)));
     let offY = BigInt(Math.round(s * (mouseDownY - e.offsetY)));
