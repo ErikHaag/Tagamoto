@@ -8,7 +8,6 @@ function pointerUp(e) {
     let s = 800 / canvas.getBoundingClientRect().width;
     let offX = BigInt(Math.round(s * (mouseDownX - e.offsetX)));
     let offY = BigInt(Math.round(s * (mouseDownY - e.offsetY)));
-    console.log(document.timeline.currentTime - mouseDownTime);
     if (offX ** 2n + offY ** 2n <= 100n && document.timeline.currentTime - mouseDownTime <= 500) {
         selecting = true;
         let x = BigInt(Math.round(s * e.offsetX)) + cameraX - 374n;
