@@ -20,6 +20,7 @@ let carIndex = -1n;
 let carDir = 0n;
 let carTurning = 0n;
 let carProgress = 50n;
+let turnQueue = [];
 
 // timers
 let stopTimer = 0n;

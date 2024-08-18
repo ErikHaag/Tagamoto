@@ -1,5 +1,3 @@
-let turnQueue = [];
-
 function navigateTo(goalX, goalY, goalDir = -1n) {
     turnQueue = [];
     if (trackIndexOf(goalX, goalY) == -1n) {
