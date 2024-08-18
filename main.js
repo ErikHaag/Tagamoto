@@ -9,6 +9,8 @@ const trackConnections = {
     turn: [2n, 3n]
 }
 
+const directions = ["east", "south", "west", "north"];
+
 const contex = canvas.getContext("2d");
 
 let turning = "straight";
@@ -37,9 +39,10 @@ let selectY = 0n;
 let selecting = false;
 
 function setup() {
-    eastTagSelect.innerHTML = northTagSelect.innerHTML;
-    southTagSelect.innerHTML = northTagSelect.innerHTML;
-    westTagSelect.innerHTML = northTagSelect.innerHTML;
+    let options = document.getElementById("northTag").innerHTML
+    for (let i = 0n; i < 3n; i++) {
+        document.getElementById(directions[i] + "Tag").innerHTML = options;
+    }
     updateUI("all");
     setInterval(loop, 15);
     window.requestAnimationFrame(draw);
@@ -147,6 +150,7 @@ function resetCar() {
         tracks.unshift({ x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"] });
         carIndex = 0n;
     }
+    updateTurning();
 }
 
 function updateCar() {
@@ -202,6 +206,7 @@ function headInDir(x, y, dir) {
 }
 
 function processTag() {
+    // normal tags
     switch (tracks[carIndex].tags[carDir]) {
         case "stop":
             stopTimer = 60n;
@@ -227,7 +232,7 @@ function processTag() {
                 updateUI("carControls");
             }
             break;
-        case "returnToOrigin": 
+        case "returnToOrigin":
             navigateTo(0n, 0n);
             break;
         case "headlightsOn":
@@ -239,6 +244,19 @@ function processTag() {
         case "none":
         default:
             break;
+    }
+    if (typeof tracks[carIndex].tags[carDir] == "object") {
+        // special tags
+        let tagData = tracks[carIndex].tags[carDir]
+        switch (tagData.type) {
+            case "driveTo":
+                if (navTagEnable.checked) {
+                    navigateTo(tagData.x, tagData.y, tagData.dir);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -318,6 +336,9 @@ function drawCar() {
         contex.translate(0, 36);
     }
     contex.drawImage(images.car, -10, -7);
+    if (turnQueue.length) {
+        contex.drawImage(images.navigation, -10, -7);
+    }
     if (headlights) {
         contex.drawImage(images.light, 10, -7);
     }
@@ -331,17 +352,30 @@ function modifyTracks() {
         } else {
             tracks[index].type = trackTypeSelect.value;
             tracks[index].rotation = BigInt(trackRotationSelect.value);
-            tracks[index].tags[0n] = eastTagSelect.value;
-            tracks[index].tags[1n] = southTagSelect.value;
-            tracks[index].tags[2n] = westTagSelect.value;
-            tracks[index].tags[3n] = northTagSelect.value;
+            for (let i = 0n; i < 4n; i++) {
+                let tagDir = directions[i];
+                let tag = document.getElementById(tagDir + "Tag").value
+                switch (tag) {
+                    case "driveTo":
+                        tracks[index].tags[i] = {
+                            type: "driveTo",
+                            x: BigInt(document.getElementById(tagDir + "DriveToX").value),
+                            y: -BigInt(document.getElementById(tagDir + "DriveToY").value),
+                            dir: BigInt(document.getElementById(tagDir + "DriveToDir").value)
+                        };
+                        break;
+                    default:
+                        tracks[index].tags[i] = tag;
+                        break;
+                }
+            }
         }
     } else if (trackTypeSelect.value != "empty") {
         tracks.push({ x: selectX, y: selectY, type: trackTypeSelect.value, rotation: BigInt(trackRotationSelect.value), tags: ["none", "none", "none", "none"] });
     } else {
         trackRotationSelect.value = "0";
     }
-    updateUI("trackDialog");
+    updateUI("trackDialog", "specialTagMenus");
 }
 
 function updateUI(...sections) {
@@ -355,7 +389,7 @@ function updateUI(...sections) {
                 rightButton.className = turning == "right" ? "highlight" : "";
                 if (updateOne) break;
             case "trackDialog":
-                selectedCoordinatesP.innerText = "X: " + selectX + ", Y: " + selectY;
+                selectedCoordinatesP.innerText = "X: " + selectX + ", Y: " + -selectY;
                 let gSX = 51n * selectX + 374n - cameraX
                 let gSY = 51n * selectY + 425n - cameraY
                 if (gSX < 0n || gSX > 800n || gSY < 0n || gSY > 800n) {
@@ -369,6 +403,22 @@ function updateUI(...sections) {
                     menuDiv.style.top = gSY + "px";
                 }
                 menuDiv.hidden = !selecting;
+                if (updateOne) break;
+            case "specialTagMenus":
+                let index = trackIndexOf(selectX, selectY);
+                let trackTag = "";
+                for (let i = 0n; i < 4n; i++) {
+                    if (index >= 0n) {
+                        trackTag = tracks[index].tags[i];
+                        if (typeof trackTag == "object") {
+                            trackTag = trackTag.type;
+                        }
+                    } else {
+                        trackTag = "none";
+                    }
+                    let tagDir = directions[i];
+                    document.getElementById(tagDir + "DriveTo").hidden = trackTag != "driveTo";
+                }
             default:
                 break;
         }

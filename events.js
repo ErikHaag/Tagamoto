@@ -21,24 +21,37 @@ canvas.addEventListener("mouseup", (e) => {
         if (index == -1n) {
             trackTypeSelect.value = "empty";
             trackRotationSelect.value = "0";
-            northTagSelect.value = "none";
-            eastTagSelect.value = "none";
-            southTagSelect.value = "none";
-            westTagSelect.value = "none";
+            for (const dir of directions) {
+                document.getElementById(dir + "Tag").value = "none";
+            }
         } else {
             trackTypeSelect.value = tracks[index].type;
             trackRotationSelect.value = tracks[index].rotation;
-            eastTagSelect.value = tracks[index].tags[0n];
-            southTagSelect.value = tracks[index].tags[1n];
-            westTagSelect.value = tracks[index].tags[2n];
-            northTagSelect.value = tracks[index].tags[3n];
+            let tagType = "";
+            for (let i = 0n; i < 4n; i++) {
+                tagType = tracks[index].tags[i];
+                let tagDir = directions[i];
+                if (typeof tagType == "object") {
+                    tagType = tracks[index].tags[i].type;
+                    if (tagType == "driveTo") {
+                        document.getElementById(tagDir + "DriveToX").value = tracks[index].tags[i].x;
+                        document.getElementById(tagDir + "DriveToY").value = -tracks[index].tags[i].y;
+                        document.getElementById(tagDir + "DriveToDir").value = tracks[index].tags[i].dir;
+                    } else {
+                        document.getElementById(tagDir + "DriveToX").value = "0";
+                        document.getElementById(tagDir + "DriveToY").value = "0";
+                        document.getElementById(tagDir + "DriveToDir").value = "-1";
+                    }
+                }
+                document.getElementById(tagDir + "Tag").value = tagType;
+            }
         }
     } else {
         cameraX += offX;
         cameraY += offY;
     }
     e.stopPropagation();
-    updateUI("trackDialog");
+    updateUI("trackDialog", "specialTagMenus");
 });
 
 document.addEventListener("mouseup", () => {
@@ -88,31 +101,48 @@ trackRotationSelect.addEventListener("change", () => {
     modifyTracks();
 });
 
-northTagSelect.addEventListener("change", () => {
-    modifyTracks();
-});
-
-eastTagSelect.addEventListener("change", () => {
-    modifyTracks();
-});
-
-southTagSelect.addEventListener("change", () => {
-    modifyTracks();
-});
-
-westTagSelect.addEventListener("change", () => {
-    modifyTracks();
-});
+for (const dir of directions) {
+    document.getElementById(dir + "Tag").addEventListener("change", () => {
+        modifyTracks();
+    });
+    document.getElementById(dir + "DriveToX").addEventListener("change", () => {
+        modifyTracks();
+    });
+    document.getElementById(dir + "DriveToY").addEventListener("change", () => {
+        modifyTracks();
+    });
+    document.getElementById(dir + "DriveToDir").addEventListener("change", () => {
+        modifyTracks();
+    });
+}
 
 moveUp.addEventListener("click", () => {
     for (let i in tracks) {
         tracks[i].y--;
+        for(let j = 0n; j < 4n; j++) {
+            switch(tracks[i].tags[j]?.type) {
+                case "driveTo":
+                    tracks[i].tags[j].y--;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 });
 
 moveLeft.addEventListener("click", () => {
     for (let i in tracks) {
         tracks[i].x--;
+        for(let j = 0n; j < 4n; j++) {
+            switch(tracks[i].tags[j]?.type) {
+                case "driveTo":
+                    tracks[i].tags[j].x--;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 });
 
@@ -122,17 +152,48 @@ turnClockwise.addEventListener("click", () => {
         tracks[i].x = -tracks[i].y;
         tracks[i].y = x;
         tracks[i].rotation = (tracks[i].rotation + 1n) % 4n;
+        tracks[i].tags.unshift(tracks[i].tags.pop());
+        for(let j = 0n; j < 4n; j++) {
+            switch(tracks[i].tags[j]?.type) {
+                case "driveTo":
+                    x = tracks[i].tags[j].x;
+                    tracks[i].tags[j].x = -tracks[i].tags[j].y;
+                    tracks[i].tags[j].y = x;
+                    tracks[i].tags[j].dir = tracks[i].tags[j].dir == -1n ? -1n : (tracks[i].tags[j].dir + 1n) % 4n;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 });
 
 moveRight.addEventListener("click", () => {
     for (let i in tracks) {
         tracks[i].x++;
+        for(let j = 0n; j < 4n; j++) {
+            switch(tracks[i].tags[j]?.type) {
+                case "driveTo":
+                    tracks[i].tags[j].x++;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 });
 
 moveDown.addEventListener("click", () => {
     for (let i in tracks) {
         tracks[i].y++;
+        for(let j = 0n; j < 4n; j++) {
+            switch(tracks[i].tags[j]?.type) {
+                case "driveTo":
+                    tracks[i].tags[j].y++;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 });

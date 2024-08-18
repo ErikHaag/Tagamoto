@@ -4,15 +4,12 @@ const images = {
     light: document.getElementById("lightImg"),
     straight: document.getElementById("straightImg"),
     tee: document.getElementById("teeImg"),
-    turn: document.getElementById("turnImg")
+    turn: document.getElementById("turnImg"),
+    navigation: document.getElementById("navigationImg")
 };
 
 const menuDiv = document.getElementById("menu");
 const selectedCoordinatesP = document.getElementById("selectedCoords");
-const northTagSelect = document.getElementById("northTag");
-const eastTagSelect = document.getElementById("eastTag");
-const southTagSelect = document.getElementById("southTag");
-const westTagSelect = document.getElementById("westTag");
 const canvas = document.getElementById("grid");
 const trackTypeSelect = document.getElementById("type");
 const trackRotationSelect = document.getElementById("rotation");

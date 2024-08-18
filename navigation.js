@@ -2,6 +2,9 @@ let turnQueue = [];
 
 function navigateTo(goalX, goalY, goalDir = -1n) {
     turnQueue = [];
+    if (trackIndexOf(goalX, goalY) == -1n) {
+        return false;
+    }
     //A* psuedocode from Wikipedia
     let startDir = (carDir + carTurning) % 4n;
     let [startX, startY] = headInDir(carX, carY, startDir);

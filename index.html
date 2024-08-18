@@ -13,6 +13,7 @@
 <body>
     <img src="car.png" id="carImg" hidden>
     <img src="light.png" id="lightImg" hidden>
+    <img src="navigation.png" id="navigationImg" hidden>
     <img src="cross.png" id="crossImg" hidden>
     <img src="straight.png" id="straightImg" hidden>
     <img src="tee.png" id="teeImg" hidden>
@@ -50,22 +51,78 @@
                 <option value="left">Prefer Left Turns</option>
                 <option value="straight">Prefer Not Turning</option>
                 <option value="right">Prefer Right Turns</option>
-                <option value="returnToOrigin">Return to Origin</option>
+                <option value="driveTo">Drive to position...</option>
             </optgroup>
             <optgroup label="Aesthetics">
                 <option value="headlightsOn">Engage Headlights</option>
                 <option value="headlightsOff">Disengage Headlights</option>
             </optgroup>
         </select><br>
+        <div id="northDriveTo" hidden>
+            <label for="northDriveToX">X:</label>
+            <input id="northDriveToX" type="number" value="0">
+            <label for="northDriveToY">Y:</label>
+            <input id="northDriveToY" type="number" value="0">
+            <label for="northDriveToDir">Direction:</label>
+            <select id="northDriveToDir">
+                <option value="-1">Any</option>
+                <option value="3">North</option>
+                <option value="0">Easy</option>
+                <option value="1">South</option>
+                <option value="2">West</option>
+            </select>
+        </div>
         <label for="eastTag">East</label>
         <select id="eastTag">
         </select><br>
+        <div id="eastDriveTo" hidden>
+            <label for="eastDriveToX">X:</label>
+            <input id="eastDriveToX" type="number" value="0">
+            <label for="eastDriveToY">Y:</label>
+            <input id="eastDriveToY" type="number" value="0">
+            <label for="eastDriveToDir">Direction:</label>
+            <select id="eastDriveToDir">
+                <option value="-1">Any</option>
+                <option value="3">North</option>
+                <option value="0">Easy</option>
+                <option value="1">South</option>
+                <option value="2">West</option>
+            </select>
+        </div>
         <label for="southTag">South</label>
         <select id="southTag">
         </select><br>
+        <div id="southDriveTo" hidden>
+            <label for="southDriveToX">X:</label>
+            <input id="southDriveToX" type="number" value="0">
+            <label for="southDriveToY">Y:</label>
+            <input id="southDriveToY" type="number" value="0">
+            <label for="southDriveToDir">Direction:</label>
+            <select id="southDriveToDir">
+                <option value="-1">Any</option>
+                <option value="3">North</option>
+                <option value="0">Easy</option>
+                <option value="1">South</option>
+                <option value="2">West</option>
+            </select>
+        </div>
         <label for="westTag">West</label>
         <select id="westTag">
-        </select>
+        </select><br>
+        <div id="westDriveTo" hidden>
+            <label for="westDriveToX">X:</label>
+            <input id="westDriveToX" type="number" value="0">
+            <label for="westDriveToY">Y:</label>
+            <input id="westDriveToY" type="number" value="0">
+            <label for="westDriveToDir">Direction:</label>
+            <select id="westDriveToDir">
+                <option value="-1">Any</option>
+                <option value="3">North</option>
+                <option value="0">Easy</option>
+                <option value="1">South</option>
+                <option value="2">West</option>
+            </select>
+        </div>
     </div>
     <table>
         <tbody>
