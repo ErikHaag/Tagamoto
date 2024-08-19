@@ -45,7 +45,10 @@ function navigateTo(goalX, goalY, goalDir = -1n) {
             continue;
         }
         let trackType = tracks[index].type;
-        let c = trackConnections[trackType];
+        let c = structuredClone(trackConnections[trackType]);
+        if (typeof c[0] != "bigint") {
+            c = c[modulus(dir - tracks[index].rotation, 4n)];
+        }
         for (const turn of [1n, 0n, 3n]) {
             let nextDir = (dir + turn) % 4n;
             let dirRel = modulus(nextDir - tracks[index].rotation, 4n);

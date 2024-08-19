@@ -2,10 +2,11 @@ const images = {
     car: document.getElementById("carImg"),
     cross: document.getElementById("crossImg"),
     light: document.getElementById("lightImg"),
+    navigation: document.getElementById("navigationImg"),
     straight: document.getElementById("straightImg"),
+    splitCenter: document.getElementById("splitCenterImg"),
     tee: document.getElementById("teeImg"),
-    turn: document.getElementById("turnImg"),
-    navigation: document.getElementById("navigationImg")
+    turn: document.getElementById("turnImg")
 };
 
 const menuDiv = document.getElementById("menu");

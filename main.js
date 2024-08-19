@@ -5,6 +5,7 @@ const tracks = [
 const trackConnections = {
     cross: [0n, 1n, 2n, 3n],
     straight: [0n, 2n],
+    splitCenter: [[3n],[0n,2n],[3n],[0n,2n,3n]],
     tee: [0n, 2n, 3n],
     turn: [2n, 3n]
 }
@@ -127,6 +128,7 @@ function draw() {
         contex.fillRect(gSX, gSY, 51, 51);
     }
     drawRoads();
+    //color corners of selected
     if (selecting) {
         contex.fillStyle = "red";
         contex.fillRect(gSX, gSY, 3, 3);
@@ -314,7 +316,10 @@ function updateTurning() {
     let right = (straight + 1n) % 4n;
     let left = (straight + 3n) % 4n;
     let trackType = tracks[carIndex].type;
-    let c = trackConnections[trackType];
+    let c = structuredClone(trackConnections[trackType]);
+    if (typeof c[0] != "bigint") {
+        c = c[straight];
+    }
     let canGoStraight = c.includes(straight);
     let canTurnRight = c.includes(right);
     let canTurnLeft = c.includes(left);
