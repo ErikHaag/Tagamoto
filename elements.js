@@ -5,6 +5,8 @@ const images = {
     navigation: document.getElementById("navigationImg"),
     straight: document.getElementById("straightImg"),
     splitCenter: document.getElementById("splitCenterImg"),
+    splitLeft: document.getElementById("splitLeftImg"),
+    splitRight: document.getElementById("splitRightImg"),
     tee: document.getElementById("teeImg"),
     turn: document.getElementById("turnImg")
 };

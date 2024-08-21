@@ -14,3 +14,11 @@
 .highlight {
     border-bottom: 5px solid red;
 }
+
+select {
+    field-sizing: content;
+}
+
+input {
+    width: 10%;
+}

@@ -5,7 +5,9 @@ const tracks = [
 const trackConnections = {
     cross: [0n, 1n, 2n, 3n],
     straight: [0n, 2n],
-    splitCenter: [[3n],[0n,2n],[3n],[0n,2n,3n]],
+    splitCenter: [[3n], [0n, 2n], [3n], [0n, 2n, 3n]],
+    splitLeft: [[0n, 3n], [2n], [2n], [0n, 2n, 3n]],
+    splitRight: [[0n, 1n], [0n, 1n, 2n], [2n] , [2n]],
     tee: [0n, 2n, 3n],
     turn: [2n, 3n]
 }
@@ -14,6 +16,8 @@ const trackOrientationMod = {
     cross: 1n,
     straight: 2n,
     splitCenter: 4n,
+    splitLeft: 4n,
+    splitRight: 4n,
     tee: 4n,
     turn: 4n
 }
@@ -65,11 +69,11 @@ function setup() {
         });
     } else {
         canvas.addEventListener("mousedown", pointerDown);
-        canvas.addEventListener("mouseup", pointerUp);       
+        canvas.addEventListener("mouseup", pointerUp);
         document.addEventListener("mouseup", () => {
             selecting = false;
             updateUI("trackDialog");
-        });     
+        });
         menuDiv.addEventListener("mousedown", (e) => {
             e.stopPropagation();
         });
@@ -391,6 +395,9 @@ function modifyTracks() {
     if (index >= 0n) {
         if (trackTypeSelect.value == "empty") {
             tracks.splice(Number(index), 1);
+            if (carIndex == index) {
+                resetCar();
+            }
         } else {
             tracks[index].type = trackTypeSelect.value;
             tracks[index].rotation = BigInt(trackRotationSelect.value);
