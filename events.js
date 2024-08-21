@@ -34,15 +34,6 @@ function pointerUp(e) {
                 let tagDir = directions[i];
                 if (typeof tagType == "object") {
                     tagType = tracks[index].tags[i].type;
-                    if (tagType == "driveTo") {
-                        document.getElementById(tagDir + "DriveToX").value = tracks[index].tags[i].x;
-                        document.getElementById(tagDir + "DriveToY").value = -tracks[index].tags[i].y;
-                        document.getElementById(tagDir + "DriveToDir").value = tracks[index].tags[i].dir;
-                    } else {
-                        document.getElementById(tagDir + "DriveToX").value = "0";
-                        document.getElementById(tagDir + "DriveToY").value = "0";
-                        document.getElementById(tagDir + "DriveToDir").value = "-1";
-                    }
                 }
                 document.getElementById(tagDir + "Tag").value = tagType;
             }
@@ -52,7 +43,7 @@ function pointerUp(e) {
         cameraY += offY;
     }
     e.stopPropagation();
-    updateUI("trackDialog", "specialTagMenus");
+    updateUI("trackDialog", "tagMenu");
 }
 
 resetCameraButton.addEventListener("click", () => {
@@ -83,6 +74,7 @@ leftButton.addEventListener("click", () => {
 
 trackTypeSelect.addEventListener("change", () => {
     modifyTracks();
+    updateUI("rotationSelect");
 });
 
 trackRotationSelect.addEventListener("change", () => {
@@ -139,7 +131,7 @@ turnClockwise.addEventListener("click", () => {
         let x = tracks[i].x;
         tracks[i].x = -tracks[i].y;
         tracks[i].y = x;
-        tracks[i].rotation = (tracks[i].rotation + 1n) % 4n;
+        tracks[i].rotation = (tracks[i].rotation + 1n) % trackOrientationMod[tracks[i].type];
         tracks[i].tags.unshift(tracks[i].tags.pop());
         for(let j = 0n; j < 4n; j++) {
             switch(tracks[i].tags[j]?.type) {

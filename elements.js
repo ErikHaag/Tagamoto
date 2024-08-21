@@ -10,6 +10,7 @@ const images = {
 };
 
 const menuDiv = document.getElementById("menu");
+const tagDiv = document.getElementById("tags");
 const selectedCoordinatesP = document.getElementById("selectedCoords");
 const canvas = document.getElementById("grid");
 const trackTypeSelect = document.getElementById("type");

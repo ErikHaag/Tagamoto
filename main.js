@@ -10,6 +10,14 @@ const trackConnections = {
     turn: [2n, 3n]
 }
 
+const trackOrientationMod = {
+    cross: 1n,
+    straight: 2n,
+    splitCenter: 4n,
+    tee: 4n,
+    turn: 4n
+}
+
 const directions = ["east", "south", "west", "north"];
 
 const contex = canvas.getContext("2d");
@@ -409,10 +417,11 @@ function modifyTracks() {
     } else {
         trackRotationSelect.value = "0";
     }
-    updateUI("trackDialog", "specialTagMenus");
+    updateUI("tagMenu");
 }
 
 function updateUI(...sections) {
+    let index = trackIndexOf(selectX, selectY);
     for (const s of sections) {
         let updateOne = s != "all";
         switch (s) {
@@ -424,8 +433,8 @@ function updateUI(...sections) {
                 if (updateOne) break;
             case "trackDialog":
                 selectedCoordinatesP.innerText = "X: " + selectX + ", Y: " + -selectY;
-                let gSX = 51n * selectX + 374n - cameraX
-                let gSY = 51n * selectY + 425n - cameraY
+                let gSX = 51n * selectX + 374n - cameraX;
+                let gSY = 51n * selectY + 425n - cameraY;
                 if (gSX < 0n || gSX > 800n || gSY < 0n || gSY > 800n) {
                     selecting = false;
                 }
@@ -439,19 +448,50 @@ function updateUI(...sections) {
                 }
                 menuDiv.hidden = !selecting;
                 if (updateOne) break;
-            case "specialTagMenus":
-                let index = trackIndexOf(selectX, selectY);
+            case "rotationSelect":
+                if (index != -1n) {
+                    let rotationMod = trackOrientationMod[tracks[index].type];
+                    trackRotationSelect.children[1].hidden = rotationMod == 1n;
+                    trackRotationSelect.children[2].hidden = rotationMod != 4n;
+                    trackRotationSelect.children[3].hidden = rotationMod != 4n;
+                    if (trackRotationSelect.value == "3" && rotationMod != 4n) {
+                        trackRotationSelect.value = "1";
+                    }
+                    if (trackRotationSelect.value == "2" && rotationMod != 4n) {
+                        trackRotationSelect.value = "0";
+                    }
+                    if (trackRotationSelect.value == "1" && rotationMod == 1n) {
+                        trackRotationSelect.value = "0";
+                    }
+                } else {
+                    trackRotationSelect.children[1].hidden = true;
+                    trackRotationSelect.children[2].hidden = true;
+                    trackRotationSelect.children[3].hidden = true;
+                    trackRotationSelect.value = "0";
+                }
+                if (updateOne) break;
+            case "tagMenu":
+                tagDiv.hidden = index == -1n;
                 let trackTag = "";
                 for (let i = 0n; i < 4n; i++) {
-                    if (index >= 0n) {
+                    let tagDir = directions[i];
+                    if (index != -1n) {
                         trackTag = tracks[index].tags[i];
                         if (typeof trackTag == "object") {
                             trackTag = trackTag.type;
                         }
+                        if (trackTag == "driveTo") {
+                            document.getElementById(tagDir + "DriveToX").value = tracks[index].tags[i].x;
+                            document.getElementById(tagDir + "DriveToY").value = -tracks[index].tags[i].y;
+                            document.getElementById(tagDir + "DriveToDir").value = tracks[index].tags[i].dir;
+                        } else {
+                            document.getElementById(tagDir + "DriveToX").value = "0";
+                            document.getElementById(tagDir + "DriveToY").value = "0";
+                            document.getElementById(tagDir + "DriveToDir").value = "-1";
+                        }
                     } else {
                         trackTag = "none";
                     }
-                    let tagDir = directions[i];
                     document.getElementById(tagDir + "DriveTo").hidden = trackTag != "driveTo";
                 }
             default:
