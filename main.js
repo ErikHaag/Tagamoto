@@ -1,7 +1,9 @@
+//placed tracks
 const tracks = [
     { x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"] }
 ];
 
+//the directions the car can leave this piece
 const trackConnections = {
     cross: [0n, 1n, 2n, 3n],
     straight: [0n, 2n],
@@ -12,6 +14,7 @@ const trackConnections = {
     turn: [2n, 3n]
 }
 
+//the number of unique orientations, used in rotation select and rotate transformation
 const trackOrientationMod = {
     cross: 1n,
     straight: 2n,
@@ -22,10 +25,13 @@ const trackOrientationMod = {
     turn: 4n
 }
 
+//cardinal directions (-Y is north, +X is east)
 const directions = ["east", "south", "west", "north"];
 
+//drawing context
 const contex = canvas.getContext("2d");
 
+//car specific variables (potential todo: have multiple cars)
 let turning = "straight";
 let carX = 0n;
 let carY = 0n;
@@ -35,16 +41,18 @@ let carTurning = 0n;
 let carProgress = 50n;
 let turnQueue = [];
 
-// timers
+//timers
 let stopTimer = 0n;
 let speedTimer = 0n;
 
-// booleans
+//booleans (replace with bigint if we have more)
 let headlights = false;
 
+//camera 
 let cameraX = 0n;
 let cameraY = 0n;
 
+//canvas variables
 let mouseDownX = 0;
 let mouseDownY = 0;
 let mouseDownTime = -1;
@@ -53,8 +61,10 @@ let selectY = 0n;
 let selecting = false;
 
 function setup() {
+    //check for a touchscreen
     let hasTouchScreen = navigator?.maxTouchPoints > 0 || navigator?.msMaxTouchPoints > 0;
     if (hasTouchScreen && window.confirm("Touch screen detected,\nwould you like to use this?")) {
+        //use pointer events instead of mouse
         canvas.addEventListener("pointerdown", pointerDown);
         canvas.addEventListener("pointerup", pointerUp);
         document.addEventListener("pointerup", () => {
@@ -68,6 +78,7 @@ function setup() {
             e.stopPropagation();
         });
     } else {
+        //default to mouse events
         canvas.addEventListener("mousedown", pointerDown);
         canvas.addEventListener("mouseup", pointerUp);
         document.addEventListener("mouseup", () => {
@@ -81,16 +92,21 @@ function setup() {
             e.stopPropagation();
         });
     }
+    //copy options from the north tag
     let options = document.getElementById("northTag").innerHTML
     for (let i = 0n; i < 3n; i++) {
         document.getElementById(directions[i] + "Tag").innerHTML = options;
     }
+    //ensure the ui is in correct state
     updateUI("all");
+    //update loop
     setInterval(loop, 15);
+    //draw loop
     window.requestAnimationFrame(draw);
 }
 
 function modulus(a, b) {
+    //modulus operator without negative results
     let r = a % b;
     if (r < 0n) {
         r += b;
@@ -99,6 +115,7 @@ function modulus(a, b) {
 }
 
 function trackIndexOf(x, y) {
+    //basically track.indexOf()
     for (const i in tracks) {
         let track = tracks[i];
         if (track.x == x && track.y == y) {
@@ -154,15 +171,23 @@ function draw() {
 }
 
 function drawRoads() {
+    //for each track piece...
     for (const track of tracks) {
+        // get its relative position
         let x = 51n * track.x + 399n - cameraX;
         let y = 51n * track.y + 399n - cameraY;
+        //if offscreen, ignore it
         if (x < -25n || x > 825n || y < -25n || y > 825n) continue;
+        //translate to center
         contex.translate(Number(x) + 0.5, Number(y) + 0.5);
+        //rotate
         contex.rotate(Number(track.rotation % 4n) * Math.PI / 2);
+        //translate slightly offcenter
         contex.translate(-0.5, -0.5);
+        //draw the correct image in this orientaion
         contex.drawImage(images[track.type], -25, -25);
         contex.resetTransform();
+        // draw tag strips
         contex.fillStyle = "white";
         contex.translate(Number(x), Number(y));
         for (let i = 0n; i <= 3n; i++) {
@@ -173,26 +198,36 @@ function drawRoads() {
             contex.rotate(Math.PI / 2);
             contex.translate(-0.5, -0.5);
         }
+        //reset for next track
         contex.resetTransform();
     }
 }
 
 function resetCar() {
+    // set position and direction to (0,0, east)
     carX = 0n;
     carY = 0n;
     carDir = 0n
+    //start halfway
     carProgress = 50n;
+    //prefer not turning
     turning = "straight";
+    //stop navigation
     turnQueue = [];
+    //ensure UI is updated with turning
     updateUI("carControls");
+    //reset timers and flags
     stopTimer = 0n;
     speedTimer = 0n;
     headlights = false;
+    //reset index
     carIndex = trackIndexOf(carX, carY);
     if (carIndex == -1) {
+        //if no piece at origin, place a straight track going east-west
         tracks.unshift({ x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"] });
         carIndex = 0n;
     }
+    //update carTurning
     updateTurning();
 }
 
@@ -200,10 +235,13 @@ function updateCar() {
     if (!driveEnable.checked) {
         return;
     }
+    //for later check
     let prevProgress = carProgress;
     if (stopTimer > 0n) {
+        //don't move if stopped
         stopTimer--;
     } else {
+        //double velocity if speeding
         let inc = 1n;
         if (speedTimer > 0n) {
             speedTimer--;
@@ -211,7 +249,7 @@ function updateCar() {
         }
         carProgress += inc;
         if (carTurning == 1n) {
-            //double speed for inner turn
+            //double speed for right turn
             carProgress += inc;
         }
     }
@@ -220,20 +258,24 @@ function updateCar() {
         processTag();
     }
     if (carProgress >= 100n) {
+        //move to next track piece
         carProgress = 0n;
         let nextDir = (carDir + carTurning) % 4n;
         [carX, carY] = headInDir(carX, carY, nextDir);
         carIndex = trackIndexOf(carX, carY);
         if (carIndex == -1) {
+            // if fell of track
             resetCar();
         } else {
             carDir = nextDir;
         }
+        //update carTurning
         updateTurning();
     }
 }
 
 function headInDir(x, y, dir) {
+    //used with destructuring assignments
     switch (dir) {
         case 0n:
             return [x + 1n, y];
@@ -304,9 +346,9 @@ function processTag() {
 }
 
 function updateTurning() {
-    if (turnQueue.length > 1) {
-        carTurning = turnQueue.shift()
-        switch (carTurning) {
+    //I know this is scuffed, but it works ok.
+    if (turnQueue.length >= 1) {
+        switch (turnQueue.shift()) {
             case 1n:
                 turning = "right";
                 break;
@@ -324,17 +366,20 @@ function updateTurning() {
         turning = turnQueue.shift();
         updateUI("carControls");
     }
+    //remember those objects from the top of the script? this is where those come in
     let straight = modulus(carDir - tracks[carIndex].rotation, 4n);
     let right = (straight + 1n) % 4n;
     let left = (straight + 3n) % 4n;
     let trackType = tracks[carIndex].type;
     let c = structuredClone(trackConnections[trackType]);
     if (typeof c[0] != "bigint") {
+        //this is a directional track piece
         c = c[straight];
     }
     let canGoStraight = c.includes(straight);
     let canTurnRight = c.includes(right);
     let canTurnLeft = c.includes(left);
+    //prioritize certain directions
     if (turning == "right") {
         if (canTurnRight) {
             carTurning = 1n;
@@ -363,13 +408,16 @@ function updateTurning() {
 }
 
 function drawCar() {
+    //find grid location
     let x = 51n * carX + 399n - cameraX;
     let y = 51n * carY + 399n - cameraY;
+    //if offscreen, don't draw it
     if (x < -25n || x > 825n || y < -25n || y > 825n) return;
     let p = Number(carProgress) / 100;
     contex.translate(Number(x) + 0.5, Number(y) + 0.5);
     contex.rotate(Number(carDir) * Math.PI / 2);
     contex.translate(-0.5, -0.5);
+    //epic animation skills here
     if (carTurning == 0n) {
         contex.translate(51 * p - 25, 11);
     } else if (carTurning == 1n) {
@@ -383,14 +431,17 @@ function drawCar() {
     }
     contex.drawImage(images.car, -10, -7);
     if (turnQueue.length) {
+        //draw light on sides
         contex.drawImage(images.navigation, -10, -7);
     }
     if (headlights) {
+        //draw beams
         contex.drawImage(images.light, 10, -7);
     }
 }
 
 function modifyTracks() {
+    //use UI to set track piece
     let index = trackIndexOf(selectX, selectY);
     if (index >= 0n) {
         if (trackTypeSelect.value == "empty") {
@@ -434,11 +485,13 @@ function updateUI(...sections) {
         switch (s) {
             case "all":
             case "carControls":
+                //underline turning direction button
                 leftButton.className = turning == "left" ? "highlight" : "";
                 straightButton.className = turning == "straight" ? "highlight" : "";
                 rightButton.className = turning == "right" ? "highlight" : "";
                 if (updateOne) break;
             case "trackDialog":
+                //correctly position track dialog
                 selectedCoordinatesP.innerText = "X: " + selectX + ", Y: " + -selectY;
                 let gSX = 51n * selectX + 374n - cameraX;
                 let gSY = 51n * selectY + 425n - cameraY;
@@ -456,6 +509,7 @@ function updateUI(...sections) {
                 menuDiv.hidden = !selecting;
                 if (updateOne) break;
             case "rotationSelect":
+                //hide unneeded options in rotation select
                 if (index != -1n) {
                     let rotationMod = trackOrientationMod[tracks[index].type];
                     trackRotationSelect.children[1].hidden = rotationMod == 1n;
@@ -478,6 +532,7 @@ function updateUI(...sections) {
                 }
                 if (updateOne) break;
             case "tagMenu":
+                //hide context menus of special tags
                 tagDiv.hidden = index == -1n;
                 let trackTag = "";
                 for (let i = 0n; i < 4n; i++) {
