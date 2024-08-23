@@ -5,6 +5,10 @@
     z-index: 1;
 }
 
+#tags p {
+    margin-bottom: 2px;
+}
+
 #grid {
     width: 80%;
     aspect-ratio: 1;

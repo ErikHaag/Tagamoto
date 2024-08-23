@@ -61,42 +61,16 @@ let selectY = 0n;
 let selecting = false;
 
 function setup() {
-    //check for a touchscreen
-    let hasTouchScreen = navigator?.maxTouchPoints > 0 || navigator?.msMaxTouchPoints > 0;
-    if (hasTouchScreen && window.confirm("Touch screen detected,\nwould you like to use this?")) {
-        //use pointer events instead of mouse
-        canvas.addEventListener("pointerdown", pointerDown);
-        canvas.addEventListener("pointerup", pointerUp);
-        document.addEventListener("pointerup", () => {
-            selecting = false;
-            updateUI("trackDialog");
-        });
-        menuDiv.addEventListener("pointerdown", (e) => {
-            e.stopPropagation();
-        });
-        menuDiv.addEventListener("pointerup", (e) => {
-            e.stopPropagation();
-        });
-    } else {
-        //default to mouse events
-        canvas.addEventListener("mousedown", pointerDown);
-        canvas.addEventListener("mouseup", pointerUp);
-        document.addEventListener("mouseup", () => {
-            selecting = false;
-            updateUI("trackDialog");
-        });
-        menuDiv.addEventListener("mousedown", (e) => {
-            e.stopPropagation();
-        });
-        menuDiv.addEventListener("mouseup", (e) => {
-            e.stopPropagation();
-        });
+    //copy tags and menus for each direction
+    let northTagOptions = tagDiv.innerHTML;
+    for (let i = 0n; i <= 2n; i++) {
+        let dir = directions[i];
+        let capitalizedDir = dir[0].toUpperCase() + dir.substring(1);
+        tagDiv.innerHTML += northTagOptions.replaceAll("=\"north", "=\"" + dir).replaceAll("North", capitalizedDir);
     }
-    //copy options from the north tag
-    let options = document.getElementById("northTag").innerHTML
-    for (let i = 0n; i < 3n; i++) {
-        document.getElementById(directions[i] + "Tag").innerHTML = options;
-    }
+    tagDiv.innerHTML = "<p>Tags</p>" + tagDiv.innerHTML;
+    //add all the events
+    setupEvents();
     //ensure the ui is in correct state
     updateUI("all");
     //update loop

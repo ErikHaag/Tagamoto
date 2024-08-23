@@ -9,6 +9,7 @@ function pointerUp(e) {
     let offX = BigInt(Math.round(s * (mouseDownX - e.offsetX)));
     let offY = BigInt(Math.round(s * (mouseDownY - e.offsetY)));
     if (offX ** 2n + offY ** 2n <= 100n && document.timeline.currentTime - mouseDownTime <= 500) {
+        //this was a tap
         selecting = true;
         let x = BigInt(Math.round(s * e.offsetX)) + cameraX - 374n;
         let y = BigInt(Math.round(s * e.offsetY)) + cameraY - 374n;
@@ -46,134 +47,156 @@ function pointerUp(e) {
     updateUI("trackDialog", "tagMenu");
 }
 
-resetCameraButton.addEventListener("click", () => {
-    cameraX = 0n;
-    cameraY = 0n;
-    selecting = false;
-    updateUI("trackDialog");
-});
-
-resetCarButton.addEventListener("click", () => {
-    resetCar();
-})
-
-rightButton.addEventListener("click", () => {
-    turning = "right";
-    updateUI("carControls");
-});
-
-straightButton.addEventListener("click", () => {
-    turning = "straight";
-    updateUI("carControls");
-});
-
-leftButton.addEventListener("click", () => {
-    turning = "left";
-    updateUI("carControls");
-});
-
-trackTypeSelect.addEventListener("change", () => {
-    modifyTracks();
-    updateUI("rotationSelect");
-});
-
-trackRotationSelect.addEventListener("change", () => {
-    modifyTracks();
-});
-
-for (const dir of directions) {
-    document.getElementById(dir + "Tag").addEventListener("change", () => {
+function setupEvents() {
+    //check for a touchscreen
+    let hasTouchScreen = navigator?.maxTouchPoints > 0 || navigator?.msMaxTouchPoints > 0;
+    if (hasTouchScreen && window.confirm("Touch screen detected,\nwould you like to use this?")) {
+        //use pointer events instead of mouse
+        canvas.addEventListener("pointerdown", pointerDown);
+        canvas.addEventListener("pointerup", pointerUp);
+        document.addEventListener("pointerup", () => {
+            selecting = false;
+            updateUI("trackDialog");
+        });
+        menuDiv.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+        });
+        menuDiv.addEventListener("pointerup", (e) => {
+            e.stopPropagation();
+        });
+    } else {
+        //default to mouse events
+        canvas.addEventListener("mousedown", pointerDown);
+        canvas.addEventListener("mouseup", pointerUp);
+        document.addEventListener("mouseup", () => {
+            selecting = false;
+            updateUI("trackDialog");
+        });
+        menuDiv.addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        menuDiv.addEventListener("mouseup", (e) => {
+            e.stopPropagation();
+        });
+    }
+    //add events to tag changing elements
+    for (const dir of directions) {
+        document.getElementById(dir + "Tag").addEventListener("change", () => {
+            modifyTracks();
+        });
+        document.getElementById(dir + "DriveToX").addEventListener("change", () => {
+            modifyTracks();
+        });
+        document.getElementById(dir + "DriveToY").addEventListener("change", () => {
+            modifyTracks();
+        });
+        document.getElementById(dir + "DriveToDir").addEventListener("change", () => {
+            modifyTracks();
+        });
+    }
+    resetCameraButton.addEventListener("click", () => {
+        cameraX = 0n;
+        cameraY = 0n;
+        selecting = false;
+        updateUI("trackDialog");
+    });
+    resetCarButton.addEventListener("click", () => {
+        resetCar();
+    });
+    rightButton.addEventListener("click", () => {
+        turning = "right";
+        updateUI("carControls");
+    });
+    straightButton.addEventListener("click", () => {
+        turning = "straight";
+        updateUI("carControls");
+    });
+    leftButton.addEventListener("click", () => {
+        turning = "left";
+        updateUI("carControls");
+    });
+    trackTypeSelect.addEventListener("change", () => {
+        modifyTracks();
+        updateUI("rotationSelect");
+    });
+    trackRotationSelect.addEventListener("change", () => {
         modifyTracks();
     });
-    document.getElementById(dir + "DriveToX").addEventListener("change", () => {
-        modifyTracks();
+    moveUp.addEventListener("click", () => {
+        for (let i in tracks) {
+            tracks[i].y--;
+            for(let j = 0n; j < 4n; j++) {
+                switch(tracks[i].tags[j]?.type) {
+                    case "driveTo":
+                        tracks[i].tags[j].y--;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     });
-    document.getElementById(dir + "DriveToY").addEventListener("change", () => {
-        modifyTracks();
+    moveLeft.addEventListener("click", () => {
+        for (let i in tracks) {
+            tracks[i].x--;
+            for(let j = 0n; j < 4n; j++) {
+                switch(tracks[i].tags[j]?.type) {
+                    case "driveTo":
+                        tracks[i].tags[j].x--;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     });
-    document.getElementById(dir + "DriveToDir").addEventListener("change", () => {
-        modifyTracks();
+    turnClockwise.addEventListener("click", () => {
+        for (let i in tracks) {
+            let x = tracks[i].x;
+            tracks[i].x = -tracks[i].y;
+            tracks[i].y = x;
+            tracks[i].rotation = (tracks[i].rotation + 1n) % trackOrientationMod[tracks[i].type];
+            tracks[i].tags.unshift(tracks[i].tags.pop());
+            for(let j = 0n; j < 4n; j++) {
+                switch(tracks[i].tags[j]?.type) {
+                    case "driveTo":
+                        x = tracks[i].tags[j].x;
+                        tracks[i].tags[j].x = -tracks[i].tags[j].y;
+                        tracks[i].tags[j].y = x;
+                        tracks[i].tags[j].dir = tracks[i].tags[j].dir == -1n ? -1n : (tracks[i].tags[j].dir + 1n) % 4n;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    });
+    moveRight.addEventListener("click", () => {
+        for (let i in tracks) {
+            tracks[i].x++;
+            for(let j = 0n; j < 4n; j++) {
+                switch(tracks[i].tags[j]?.type) {
+                    case "driveTo":
+                        tracks[i].tags[j].x++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    });
+    moveDown.addEventListener("click", () => {
+        for (let i in tracks) {
+            tracks[i].y++;
+            for(let j = 0n; j < 4n; j++) {
+                switch(tracks[i].tags[j]?.type) {
+                    case "driveTo":
+                        tracks[i].tags[j].y++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     });
 }
-
-moveUp.addEventListener("click", () => {
-    for (let i in tracks) {
-        tracks[i].y--;
-        for(let j = 0n; j < 4n; j++) {
-            switch(tracks[i].tags[j]?.type) {
-                case "driveTo":
-                    tracks[i].tags[j].y--;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-});
-
-moveLeft.addEventListener("click", () => {
-    for (let i in tracks) {
-        tracks[i].x--;
-        for(let j = 0n; j < 4n; j++) {
-            switch(tracks[i].tags[j]?.type) {
-                case "driveTo":
-                    tracks[i].tags[j].x--;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-});
-
-turnClockwise.addEventListener("click", () => {
-    for (let i in tracks) {
-        let x = tracks[i].x;
-        tracks[i].x = -tracks[i].y;
-        tracks[i].y = x;
-        tracks[i].rotation = (tracks[i].rotation + 1n) % trackOrientationMod[tracks[i].type];
-        tracks[i].tags.unshift(tracks[i].tags.pop());
-        for(let j = 0n; j < 4n; j++) {
-            switch(tracks[i].tags[j]?.type) {
-                case "driveTo":
-                    x = tracks[i].tags[j].x;
-                    tracks[i].tags[j].x = -tracks[i].tags[j].y;
-                    tracks[i].tags[j].y = x;
-                    tracks[i].tags[j].dir = tracks[i].tags[j].dir == -1n ? -1n : (tracks[i].tags[j].dir + 1n) % 4n;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-});
-
-moveRight.addEventListener("click", () => {
-    for (let i in tracks) {
-        tracks[i].x++;
-        for(let j = 0n; j < 4n; j++) {
-            switch(tracks[i].tags[j]?.type) {
-                case "driveTo":
-                    tracks[i].tags[j].x++;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-});
-
-moveDown.addEventListener("click", () => {
-    for (let i in tracks) {
-        tracks[i].y++;
-        for(let j = 0n; j < 4n; j++) {
-            switch(tracks[i].tags[j]?.type) {
-                case "driveTo":
-                    tracks[i].tags[j].y++;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-});
