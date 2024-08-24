@@ -66,7 +66,7 @@ function setup() {
     for (let i = 0n; i <= 2n; i++) {
         let dir = directions[i];
         let capitalizedDir = dir[0].toUpperCase() + dir.substring(1);
-        tagDiv.innerHTML += northTagOptions.replaceAll("=\"north", "=\"" + dir).replaceAll("North", capitalizedDir);
+        tagDiv.innerHTML += northTagOptions.replaceAll("id=\"north", "id=\"" + dir).replaceAll("for=\"north", "for=\"" + dir).replaceAll("North", capitalizedDir);
     }
     tagDiv.innerHTML = "<p style=\"text-decoration: underline;\">Tags</p>" + tagDiv.innerHTML;
     //add all the events
