@@ -5,8 +5,13 @@
     z-index: 1;
 }
 
-#tags p {
-    margin-bottom: 2px;
+#tags {
+    margin-left: 1em;
+}
+
+p {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 #grid {

@@ -84,7 +84,8 @@ function setupEvents() {
         document.getElementById(dir + "Tag").addEventListener("change", () => {
             modifyTracks();
         });
-        document.getElementById(dir + "DriveToX").addEventListener("change", () => {
+        document.getElementById(dir + "DriveToX").addEventListener("change", (e) => {
+            e.target.value = e.target.value.replace(".", "-");
             modifyTracks();
         });
         document.getElementById(dir + "DriveToY").addEventListener("change", () => {

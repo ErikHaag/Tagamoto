@@ -68,7 +68,7 @@ function setup() {
         let capitalizedDir = dir[0].toUpperCase() + dir.substring(1);
         tagDiv.innerHTML += northTagOptions.replaceAll("=\"north", "=\"" + dir).replaceAll("North", capitalizedDir);
     }
-    tagDiv.innerHTML = "<p>Tags</p>" + tagDiv.innerHTML;
+    tagDiv.innerHTML = "<p style=\"text-decoration: underline;\">Tags</p>" + tagDiv.innerHTML;
     //add all the events
     setupEvents();
     //ensure the ui is in correct state
@@ -321,7 +321,7 @@ function processTag() {
 
 function updateTurning() {
     //I know this is scuffed, but it works ok.
-    if (turnQueue.length >= 1) {
+    if (turnQueue.length > 1) {
         switch (turnQueue.shift()) {
             case 1n:
                 turning = "right";
