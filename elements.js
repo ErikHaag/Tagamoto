@@ -1,16 +1,21 @@
 const images = {
     car: document.getElementById("carImg"),
-    cross: document.getElementById("crossImg"),
     light: document.getElementById("lightImg"),
     navigation: document.getElementById("navigationImg"),
     policeLight: document.getElementById("policeLightImg"),
-    splitCenter: document.getElementById("splitCenterImg"),
-    splitLeft: document.getElementById("splitLeftImg"),
-    splitRight: document.getElementById("splitRightImg"),
-    straight: document.getElementById("straightImg"),
-    tee: document.getElementById("teeImg"),
-    turn: document.getElementById("turnImg")
+    trackAtlas: document.getElementById("trackAtlasImg")
 };
+
+const trackAtlasPositions = {
+    blank: {x: 0, y: 0},
+    cross: {x: 51, y: 102},
+    splitCenter: {x: 51, y: 51},
+    splitLeft: {x: 102, y: 51},
+    splitRight: {x: 0, y: 102},
+    straight: {x: 51, y: 0},
+    tee: {x: 0, y: 51},
+    turn: {x: 102, y: 0}
+}
 
 const menuDiv = document.getElementById("menu");
 const tagDiv = document.getElementById("tags");

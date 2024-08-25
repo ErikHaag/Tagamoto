@@ -161,7 +161,7 @@ function drawRoads() {
         //translate slightly offcenter
         contex.translate(-0.5, -0.5);
         //draw the correct image in this orientaion
-        contex.drawImage(images[track.type], -25, -25);
+        contex.drawImage(images.trackAtlas, trackAtlasPositions[track.type].x, trackAtlasPositions[track.type].y, 51, 51, -25, -25, 51, 51);
         contex.resetTransform();
         // draw tag strips
         contex.fillStyle = "white";
