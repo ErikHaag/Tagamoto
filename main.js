@@ -300,13 +300,13 @@ function processTag() {
             flags |= headlightFlag;
             break;
         case "headlightsOff":
-            flags |= ~headlightFlag;
+            flags &= ~headlightFlag;
             break;
         case "policeLightOn":
             flags |= policeLightFlag;
             break;
         case "policeLightOff":
-            flags |= ~policeLightFlag;
+            flags &= ~policeLightFlag;
             break;
         case "none":
         default:
