@@ -3,10 +3,11 @@ const images = {
     cross: document.getElementById("crossImg"),
     light: document.getElementById("lightImg"),
     navigation: document.getElementById("navigationImg"),
-    straight: document.getElementById("straightImg"),
+    policeLight: document.getElementById("policeLightImg"),
     splitCenter: document.getElementById("splitCenterImg"),
     splitLeft: document.getElementById("splitLeftImg"),
     splitRight: document.getElementById("splitRightImg"),
+    straight: document.getElementById("straightImg"),
     tee: document.getElementById("teeImg"),
     turn: document.getElementById("turnImg")
 };

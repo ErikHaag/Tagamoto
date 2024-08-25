@@ -9,7 +9,7 @@ const trackConnections = {
     straight: [0n, 2n],
     splitCenter: [[3n], [0n, 2n], [3n], [0n, 2n, 3n]],
     splitLeft: [[0n, 3n], [2n], [2n], [0n, 2n, 3n]],
-    splitRight: [[0n, 1n], [0n, 1n, 2n], [2n] , [2n]],
+    splitRight: [[0n, 1n], [0n, 1n, 2n], [2n], [2n]],
     tee: [0n, 2n, 3n],
     turn: [2n, 3n]
 }
@@ -45,8 +45,10 @@ let turnQueue = [];
 let stopTimer = 0n;
 let speedTimer = 0n;
 
-//booleans (replace with bigint if we have more)
-let headlights = false;
+//booleans
+const headlightFlag = 1n;
+const policeLightFlag = 2n;
+let flags = 0n;
 
 //camera 
 let cameraX = 0n;
@@ -193,7 +195,7 @@ function resetCar() {
     //reset timers and flags
     stopTimer = 0n;
     speedTimer = 0n;
-    headlights = false;
+    flags = 0n;
     //reset index
     carIndex = trackIndexOf(carX, carY);
     if (carIndex == -1) {
@@ -295,10 +297,16 @@ function processTag() {
             navigateTo(0n, 0n);
             break;
         case "headlightsOn":
-            headlights = true;
+            flags |= headlightFlag;
             break;
         case "headlightsOff":
-            headlights = false;
+            flags |= ~headlightFlag;
+            break;
+        case "policeLightOn":
+            flags |= policeLightFlag;
+            break;
+        case "policeLightOff":
+            flags |= ~policeLightFlag;
             break;
         case "none":
         default:
@@ -408,9 +416,20 @@ function drawCar() {
         //draw light on sides
         contex.drawImage(images.navigation, -10, -7);
     }
-    if (headlights) {
+    if (flags & headlightFlag) {
         //draw beams
         contex.drawImage(images.light, 10, -7);
+    }
+    if (flags & policeLightFlag) {
+        let policeBarFlipped = document.timeline.currentTime % 2000 >= 1000;
+        let transform = contex.getTransform();
+        contex.translate(0.5, 0.5);
+        if (policeBarFlipped) {
+            contex.rotate(Math.PI);
+        }
+        contex.translate(-0.5, -0.5);
+        contex.drawImage(images.policeLight, -1, -5);
+        contex.setTransform(transform);
     }
 }
 
