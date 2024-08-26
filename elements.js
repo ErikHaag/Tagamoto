@@ -7,14 +7,13 @@ const images = {
 };
 
 const trackAtlasPositions = {
-    blank: {x: 0, y: 0},
-    cross: {x: 51, y: 102},
-    splitCenter: {x: 51, y: 51},
-    splitLeft: {x: 102, y: 51},
-    splitRight: {x: 0, y: 102},
-    straight: {x: 51, y: 0},
-    tee: {x: 0, y: 51},
-    turn: {x: 102, y: 0}
+    cross: {x: 0, y: 102},
+    splitCenter: {x: 0, y: 51},
+    splitLeft: {x: 51, y: 51},
+    splitRight: {x: 102, y: 51},
+    straight: {x: 0, y: 0},
+    tee: {x: 102, y: 0},
+    turn: {x: 51, y: 0}
 }
 
 const menuDiv = document.getElementById("menu");
