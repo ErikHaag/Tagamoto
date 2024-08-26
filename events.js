@@ -38,6 +38,7 @@ function pointerUp(e) {
                 }
                 document.getElementById(tagDir + "Tag").value = tagType;
             }
+            updateUI("rotationSelect");
         }
     } else {
         cameraX += offX;
