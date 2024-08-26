@@ -6,6 +6,7 @@ const tracks = [
 //the directions the car can leave this piece
 const trackConnections = {
     cross: [0n, 1n, 2n, 3n],
+    crossing: [[0n], [1n], [2n], [3n]],
     straight: [0n, 2n],
     splitCenter: [[3n], [0n, 2n], [3n], [0n, 2n, 3n]],
     splitLeft: [[0n, 3n], [2n], [2n], [0n, 2n, 3n]],
@@ -17,6 +18,7 @@ const trackConnections = {
 //the number of unique orientations, used in rotation select and rotate transformation
 const trackOrientationMod = {
     cross: 1n,
+    crossing: 1n,
     straight: 2n,
     splitCenter: 4n,
     splitLeft: 4n,

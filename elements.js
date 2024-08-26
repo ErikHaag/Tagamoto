@@ -8,6 +8,7 @@ const images = {
 
 const trackAtlasPositions = {
     cross: {x: 0, y: 102},
+    crossing: {x: 51, y: 102},
     splitCenter: {x: 0, y: 51},
     splitLeft: {x: 51, y: 51},
     splitRight: {x: 102, y: 51},
