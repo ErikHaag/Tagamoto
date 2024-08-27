@@ -1,6 +1,6 @@
 //placed tracks
 const tracks = [
-    { x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"] }
+    { x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"], signs: ["none", "none", "none", "none"] }
 ];
 
 //the directions the car can leave this piece
@@ -66,13 +66,16 @@ let selecting = false;
 
 function setup() {
     //copy tags and menus for each direction
-    let northTagOptions = tagDiv.innerHTML;
+    let tagDivHtml = tagDiv.innerHTML;
+    let signDivHtml = signDiv.innerHTML;
     for (let i = 0n; i <= 2n; i++) {
         let dir = directions[i];
         let capitalizedDir = dir[0].toUpperCase() + dir.substring(1);
-        tagDiv.innerHTML += northTagOptions.replaceAll("id=\"north", "id=\"" + dir).replaceAll("for=\"north", "for=\"" + dir).replaceAll("North</label>", capitalizedDir + "</label>");
+        tagDiv.innerHTML += tagDivHtml.replaceAll("id=\"north", "id=\"" + dir).replaceAll("for=\"north", "for=\"" + dir).replaceAll("North</label>", capitalizedDir + "</label>");
+        signDiv.innerHTML += signDivHtml.replaceAll("id=\"north", "id=\"" + dir).replaceAll("for=\"north", "for=\"" + dir).replaceAll("North</label>", capitalizedDir + "</label>");
     }
-    tagDiv.innerHTML = "<p style=\"text-decoration: underline;\">Tags</p>" + tagDiv.innerHTML;
+    tagDiv.innerHTML = "<p>Tags</p>" + tagDiv.innerHTML;
+    signDiv.innerHTML = "<p>Signs</p>" + signDiv.innerHTML;
     //add all the events
     setupEvents();
     //ensure the ui is in correct state
@@ -134,7 +137,7 @@ function draw() {
     if (selecting) {
         contex.fillRect(gSX, gSY, 51, 51);
     }
-    drawRoads();
+    drawRoads();    
     //color corners of selected
     if (selecting) {
         contex.fillStyle = "red";
@@ -144,7 +147,8 @@ function draw() {
         contex.fillRect(gSX + 48, gSY + 48, 3, 3);
     }
     drawCar();
-    contex.resetTransform()
+    //draw signs above car
+    drawSigns();
     window.requestAnimationFrame(draw);
 }
 
@@ -181,6 +185,30 @@ function drawRoads() {
     }
 }
 
+function drawSigns() {
+    for (const track of tracks) {
+        // get its relative position
+        let x = 51n * track.x + 399n - cameraX;
+        let y = 51n * track.y + 399n - cameraY;
+        //if offscreen, ignore it
+        if (x < -25n || x > 825n || y < -25n || y > 825n) continue;
+        // draw signs
+        contex.translate(Number(x), Number(y));
+        contex.fillStyle = "blue";
+        for (let i = 0n; i <= 3n; i++) {
+            let sign = track.signs[i];
+            if (sign != "none") {
+                contex.drawImage(images[sign], -29, 15);
+            }
+            contex.translate(0.5, 0.5);
+            contex.rotate(Math.PI / 2);
+            contex.translate(-0.5, -0.5);
+        }
+        //reset for next track
+        contex.resetTransform();
+    }
+}
+
 function resetCar() {
     // set position and direction to (0,0, east)
     carX = 0n;
@@ -202,7 +230,7 @@ function resetCar() {
     carIndex = trackIndexOf(carX, carY);
     if (carIndex == -1) {
         //if no piece at origin, place a straight track going east-west
-        tracks.unshift({ x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"] });
+        tracks.unshift({ x: 0n, y: 0n, type: "straight", rotation: 0n, tags: ["none", "none", "none", "none"], signs: ["none", "none", "none", "none"] });
         carIndex = 0n;
     }
     //update carTurning
@@ -433,6 +461,7 @@ function drawCar() {
         contex.drawImage(images.policeLight, -1, -5);
         contex.setTransform(transform);
     }
+    contex.resetTransform();
 }
 
 function modifyTracks() {
@@ -448,25 +477,27 @@ function modifyTracks() {
             tracks[index].type = trackTypeSelect.value;
             tracks[index].rotation = BigInt(trackRotationSelect.value);
             for (let i = 0n; i < 4n; i++) {
-                let tagDir = directions[i];
-                let tag = document.getElementById(tagDir + "Tag").value
+                let dir = directions[i];
+                let tag = document.getElementById(dir + "Tag").value
                 switch (tag) {
                     case "driveTo":
                         tracks[index].tags[i] = {
                             type: "driveTo",
-                            x: BigInt(document.getElementById(tagDir + "DriveToX").value),
-                            y: -BigInt(document.getElementById(tagDir + "DriveToY").value),
-                            dir: BigInt(document.getElementById(tagDir + "DriveToDir").value)
+                            x: BigInt(document.getElementById(dir + "DriveToX").value),
+                            y: -BigInt(document.getElementById(dir + "DriveToY").value),
+                            dir: BigInt(document.getElementById(dir + "DriveToDir").value)
                         };
                         break;
                     default:
                         tracks[index].tags[i] = tag;
                         break;
                 }
+                let sign = document.getElementById(dir + "Sign").value
+                tracks[index].signs[i] = sign;
             }
         }
     } else if (trackTypeSelect.value != "empty") {
-        tracks.push({ x: selectX, y: selectY, type: trackTypeSelect.value, rotation: BigInt(trackRotationSelect.value), tags: ["none", "none", "none", "none"] });
+        tracks.push({ x: selectX, y: selectY, type: trackTypeSelect.value, rotation: BigInt(trackRotationSelect.value), tags: ["none", "none", "none", "none"], signs: ["none", "none", "none", "none"] });
     } else {
         trackRotationSelect.value = "0";
     }
@@ -529,6 +560,7 @@ function updateUI(...sections) {
             case "tagMenu":
                 //hide context menus of special tags
                 tagDiv.hidden = index == -1n;
+                signDiv.hidden = index == -1n;
                 let trackTag = "";
                 for (let i = 0n; i < 4n; i++) {
                     let tagDir = directions[i];

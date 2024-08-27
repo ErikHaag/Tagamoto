@@ -3,6 +3,8 @@ const images = {
     light: document.getElementById("lightImg"),
     navigation: document.getElementById("navigationImg"),
     policeLight: document.getElementById("policeLightImg"),
+    stopSign: document.getElementById("stopSignImg"),
+    streetNameSign: document.getElementById("streetNameSignImg"),
     trackAtlas: document.getElementById("trackAtlasImg")
 };
 
@@ -19,6 +21,7 @@ const trackAtlasPositions = {
 
 const menuDiv = document.getElementById("menu");
 const tagDiv = document.getElementById("tags");
+const signDiv = document.getElementById("signs")
 const selectedCoordinatesP = document.getElementById("selectedCoords");
 const canvas = document.getElementById("grid");
 const trackTypeSelect = document.getElementById("type");

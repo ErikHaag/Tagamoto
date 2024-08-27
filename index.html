@@ -16,6 +16,8 @@
     <img src="navigation.png" id="navigationImg" hidden>
     <img src="policeLight.png" id="policeLightImg" hidden>
     <img src="trackAtlas.png" id="trackAtlasImg" hidden>
+    <img src="stopSign.png" id="stopSignImg" hidden>
+    <img src="streetNameSign.png" id="streetNameSignImg" hidden>
     <p>
         click on a grid square to place some track<br>
         drag and release to move your view
@@ -77,6 +79,14 @@
                     <option value="2">West</option>
                 </select>
             </div>
+        </div>
+        <div id="signs">
+            <label for="northSign">North</label>
+            <select id="northSign">
+                <option value="none" selected>None</option>
+                <option value="stopSign">Stop Sign</option>
+                <option value="streetNameSign">Street Name</option>
+            </select><br>
         </div>
     </div>
     <table>

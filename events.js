@@ -25,18 +25,20 @@ function pointerUp(e) {
             trackRotationSelect.value = "0";
             for (const dir of directions) {
                 document.getElementById(dir + "Tag").value = "none";
+                document.getElementById(dir + "Sign").value = "none";
             }
         } else {
             trackTypeSelect.value = tracks[index].type;
             trackRotationSelect.value = tracks[index].rotation;
-            let tagType = "";
             for (let i = 0n; i < 4n; i++) {
-                tagType = tracks[index].tags[i];
-                let tagDir = directions[i];
+                let tagType = tracks[index].tags[i];
+                let signType = tracks[index].signs[i];
+                let dir = directions[i];
                 if (typeof tagType == "object") {
                     tagType = tracks[index].tags[i].type;
                 }
-                document.getElementById(tagDir + "Tag").value = tagType;
+                document.getElementById(dir + "Tag").value = tagType;
+                document.getElementById(dir + "Sign").value = signType;
             }
             updateUI("rotationSelect");
         }
@@ -95,6 +97,9 @@ function setupEvents() {
         document.getElementById(dir + "DriveToDir").addEventListener("change", () => {
             modifyTracks();
         });
+        document.getElementById(dir + "Sign").addEventListener("change", () => {
+            modifyTracks();
+        })
     }
     resetCameraButton.addEventListener("click", () => {
         cameraX = 0n;
