@@ -19,8 +19,8 @@ function pointerUp(e) {
         y /= 51n;
         selectX = x;
         selectY = y;
-        let index = trackIndexOf(selectX, selectY);
-        if (index == -1n) {
+        selectIndex = trackIndexOf(selectX, selectY);
+        if (selectIndex == -1n) {
             trackTypeSelect.value = "empty";
             trackRotationSelect.value = "0";
             for (const dir of directions) {
@@ -28,14 +28,14 @@ function pointerUp(e) {
                 document.getElementById(dir + "Sign").value = "none";
             }
         } else {
-            trackTypeSelect.value = tracks[index].type;
-            trackRotationSelect.value = tracks[index].rotation;
+            trackTypeSelect.value = tracks[selectIndex].type;
+            trackRotationSelect.value = tracks[selectIndex].rotation;
             for (let i = 0n; i < 4n; i++) {
-                let tagType = tracks[index].tags[i];
-                let signType = tracks[index].signs[i];
+                let tagType = tracks[selectIndex].tags[i];
+                let signType = tracks[selectIndex].signs[i];
                 let dir = directions[i];
                 if (typeof tagType == "object") {
-                    tagType = tracks[index].tags[i].type;
+                    tagType = tracks[selectIndex].tags[i].type;
                 }
                 document.getElementById(dir + "Tag").value = tagType;
                 document.getElementById(dir + "Sign").value = signType;

@@ -62,6 +62,7 @@ let mouseDownY = 0;
 let mouseDownTime = -1;
 let selectX = 0n;
 let selectY = 0n;
+let selectIndex = -1n;
 let selecting = false;
 
 function setup() {
@@ -347,7 +348,7 @@ function processTag() {
         let tagData = tracks[carIndex].tags[carDir]
         switch (tagData.type) {
             case "driveTo":
-                if (navTagEnable.checked) {
+                if (navTagEnable.checked && turnQueue.length == 0) {
                     navigateTo(tagData.x, tagData.y, tagData.dir);
                 }
                 break;
@@ -466,22 +467,22 @@ function drawCar() {
 
 function modifyTracks() {
     //use UI to set track piece
-    let index = trackIndexOf(selectX, selectY);
-    if (index >= 0n) {
+    if (selectIndex != -1n) {
         if (trackTypeSelect.value == "empty") {
-            tracks.splice(Number(index), 1);
-            if (carIndex == index) {
+            tracks.splice(Number(selectIndex), 1);
+            selectIndex = -1n;
+            if (carIndex == selectIndex) {
                 resetCar();
             }
         } else {
-            tracks[index].type = trackTypeSelect.value;
-            tracks[index].rotation = BigInt(trackRotationSelect.value);
+            tracks[selectIndex].type = trackTypeSelect.value;
+            tracks[selectIndex].rotation = BigInt(trackRotationSelect.value);
             for (let i = 0n; i < 4n; i++) {
                 let dir = directions[i];
                 let tag = document.getElementById(dir + "Tag").value
                 switch (tag) {
                     case "driveTo":
-                        tracks[index].tags[i] = {
+                        tracks[selectIndex].tags[i] = {
                             type: "driveTo",
                             x: BigInt(document.getElementById(dir + "DriveToX").value),
                             y: -BigInt(document.getElementById(dir + "DriveToY").value),
@@ -489,15 +490,16 @@ function modifyTracks() {
                         };
                         break;
                     default:
-                        tracks[index].tags[i] = tag;
+                        tracks[selectIndex].tags[i] = tag;
                         break;
                 }
                 let sign = document.getElementById(dir + "Sign").value
-                tracks[index].signs[i] = sign;
+                tracks[selectIndex].signs[i] = sign;
             }
         }
     } else if (trackTypeSelect.value != "empty") {
-        tracks.push({ x: selectX, y: selectY, type: trackTypeSelect.value, rotation: BigInt(trackRotationSelect.value), tags: ["none", "none", "none", "none"], signs: ["none", "none", "none", "none"] });
+        tracks.unshift({ x: selectX, y: selectY, type: trackTypeSelect.value, rotation: BigInt(trackRotationSelect.value), tags: ["none", "none", "none", "none"], signs: ["none", "none", "none", "none"] });
+        selectIndex = 0n;
     } else {
         trackRotationSelect.value = "0";
     }
@@ -505,7 +507,6 @@ function modifyTracks() {
 }
 
 function updateUI(...sections) {
-    let index = trackIndexOf(selectX, selectY);
     for (const s of sections) {
         let updateOne = s != "all";
         switch (s) {
@@ -536,8 +537,8 @@ function updateUI(...sections) {
                 if (updateOne) break;
             case "rotationSelect":
                 //hide unneeded options in rotation select
-                if (index != -1n) {
-                    let rotationMod = trackOrientationMod[tracks[index].type];
+                if (selectIndex != -1n) {
+                    let rotationMod = trackOrientationMod[tracks[selectIndex].type];
                     trackRotationSelect.children[1].hidden = rotationMod == 1n;
                     trackRotationSelect.children[2].hidden = rotationMod != 4n;
                     trackRotationSelect.children[3].hidden = rotationMod != 4n;
@@ -559,20 +560,20 @@ function updateUI(...sections) {
                 if (updateOne) break;
             case "tagMenu":
                 //hide context menus of special tags
-                tagDiv.hidden = index == -1n;
-                signDiv.hidden = index == -1n;
+                tagDiv.hidden = selectIndex == -1n;
+                signDiv.hidden = selectIndex == -1n;
                 let trackTag = "";
                 for (let i = 0n; i < 4n; i++) {
                     let tagDir = directions[i];
-                    if (index != -1n) {
-                        trackTag = tracks[index].tags[i];
+                    if (selectIndex != -1n) {
+                        trackTag = tracks[selectIndex].tags[i];
                         if (typeof trackTag == "object") {
                             trackTag = trackTag.type;
                         }
                         if (trackTag == "driveTo") {
-                            document.getElementById(tagDir + "DriveToX").value = tracks[index].tags[i].x;
-                            document.getElementById(tagDir + "DriveToY").value = -tracks[index].tags[i].y;
-                            document.getElementById(tagDir + "DriveToDir").value = tracks[index].tags[i].dir;
+                            document.getElementById(tagDir + "DriveToX").value = tracks[selectIndex].tags[i].x;
+                            document.getElementById(tagDir + "DriveToY").value = -tracks[selectIndex].tags[i].y;
+                            document.getElementById(tagDir + "DriveToDir").value = tracks[selectIndex].tags[i].dir;
                         } else {
                             document.getElementById(tagDir + "DriveToX").value = "0";
                             document.getElementById(tagDir + "DriveToY").value = "0";
