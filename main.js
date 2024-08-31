@@ -69,14 +69,16 @@ function setup() {
     //copy tags and menus for each direction
     let tagDivHtml = tagDiv.innerHTML;
     let signDivHtml = signDiv.innerHTML;
-    for (let i = 0n; i <= 2n; i++) {
-        let dir = directions[i];
+    let newTagDivHtml = "";
+    let newSignDivHtml = "";
+    for (let i = 0n; i <= 3n; i++) {
+        let dir = directions[(i + 3n) % 4n];
         let capitalizedDir = dir[0].toUpperCase() + dir.substring(1);
-        tagDiv.innerHTML += tagDivHtml.replaceAll("id=\"north", "id=\"" + dir).replaceAll("for=\"north", "for=\"" + dir).replaceAll("North</label>", capitalizedDir + "</label>");
-        signDiv.innerHTML += signDivHtml.replaceAll("id=\"north", "id=\"" + dir).replaceAll("for=\"north", "for=\"" + dir).replaceAll("North</label>", capitalizedDir + "</label>");
+        newTagDivHtml += tagDivHtml.replaceAll("[dir]", dir).replaceAll("[Dir]", capitalizedDir);
+        newSignDivHtml += signDivHtml.replaceAll("[dir]", dir).replaceAll("[Dir]", capitalizedDir);
     }
-    tagDiv.innerHTML = "<p>Tags</p>" + tagDiv.innerHTML;
-    signDiv.innerHTML = "<p>Signs</p>" + signDiv.innerHTML;
+    tagDiv.innerHTML = "<p>Tags</p>" + newTagDivHtml;
+    signDiv.innerHTML = "<p>Signs</p>" + newSignDivHtml;
     //add all the events
     setupEvents();
     //ensure the ui is in correct state
@@ -184,6 +186,51 @@ function drawRoads() {
         //reset for next track
         contex.resetTransform();
     }
+}
+
+function drawCar() {
+    //find grid location
+    let x = 51n * carX + 399n - cameraX;
+    let y = 51n * carY + 399n - cameraY;
+    //if offscreen, don't draw it
+    if (x < -25n || x > 825n || y < -25n || y > 825n) return;
+    let p = Number(carProgress) / 100;
+    contex.translate(Number(x) + 0.5, Number(y) + 0.5);
+    contex.rotate(Number(carDir) * Math.PI / 2);
+    contex.translate(-0.5, -0.5);
+    //epic animation skills here
+    if (carTurning == 0n) {
+        contex.translate(51 * p - 25, 11);
+    } else if (carTurning == 1n) {
+        contex.translate(-25, 26);
+        contex.rotate(Math.PI / 2 * p);
+        contex.translate(0, -15);
+    } else if (carTurning == 3n) {
+        contex.translate(-25, -25);
+        contex.rotate(-Math.PI / 2 * p);
+        contex.translate(0, 36);
+    }
+    contex.drawImage(images.car, -10, -7);
+    if (turnQueue.length) {
+        //draw light on sides
+        contex.drawImage(images.navigation, -10, -7);
+    }
+    if (flags & headlightFlag) {
+        //draw beams
+        contex.drawImage(images.light, 10, -7);
+    }
+    if (flags & policeLightFlag) {
+        let policeBarFlipped = document.timeline.currentTime % 2000 >= 1000;
+        let transform = contex.getTransform();
+        contex.translate(0.5, 0.5);
+        if (policeBarFlipped) {
+            contex.rotate(Math.PI);
+        }
+        contex.translate(-0.5, -0.5);
+        contex.drawImage(images.policeLight, -1, -5);
+        contex.setTransform(transform);
+    }
+    contex.resetTransform();
 }
 
 function drawSigns() {
@@ -418,51 +465,6 @@ function updateTurning() {
             carTurning = 3n;
         }
     }
-}
-
-function drawCar() {
-    //find grid location
-    let x = 51n * carX + 399n - cameraX;
-    let y = 51n * carY + 399n - cameraY;
-    //if offscreen, don't draw it
-    if (x < -25n || x > 825n || y < -25n || y > 825n) return;
-    let p = Number(carProgress) / 100;
-    contex.translate(Number(x) + 0.5, Number(y) + 0.5);
-    contex.rotate(Number(carDir) * Math.PI / 2);
-    contex.translate(-0.5, -0.5);
-    //epic animation skills here
-    if (carTurning == 0n) {
-        contex.translate(51 * p - 25, 11);
-    } else if (carTurning == 1n) {
-        contex.translate(-25, 26);
-        contex.rotate(Math.PI / 2 * p);
-        contex.translate(0, -15);
-    } else if (carTurning == 3n) {
-        contex.translate(-25, -25);
-        contex.rotate(-Math.PI / 2 * p);
-        contex.translate(0, 36);
-    }
-    contex.drawImage(images.car, -10, -7);
-    if (turnQueue.length) {
-        //draw light on sides
-        contex.drawImage(images.navigation, -10, -7);
-    }
-    if (flags & headlightFlag) {
-        //draw beams
-        contex.drawImage(images.light, 10, -7);
-    }
-    if (flags & policeLightFlag) {
-        let policeBarFlipped = document.timeline.currentTime % 2000 >= 1000;
-        let transform = contex.getTransform();
-        contex.translate(0.5, 0.5);
-        if (policeBarFlipped) {
-            contex.rotate(Math.PI);
-        }
-        contex.translate(-0.5, -0.5);
-        contex.drawImage(images.policeLight, -1, -5);
-        contex.setTransform(transform);
-    }
-    contex.resetTransform();
 }
 
 function modifyTracks() {

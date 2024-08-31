@@ -44,8 +44,8 @@
             <option value="3" hidden>270&deg;</option>
         </select>
         <div id="tags" hidden>
-            <label for="northTag">North</label>
-            <select id="northTag">
+            <label for="[dir]Tag">[Dir]</label>
+            <select id="[dir]Tag">
                 <option value="none" selected>None</option>
                 <optgroup label="Timed">
                     <option value="speed">Speeding</option>
@@ -64,14 +64,14 @@
                     <option value="policeLightOff">Deactivate Police Light</option>
                 </optgroup>
             </select><br>
-            <div id="northDriveTo" hidden>
+            <div id="[dir]DriveTo" hidden>
                 <p>For mobile, .5 will convert to -5</p>
-                <label for="northDriveToX">X:</label>
-                <input id="northDriveToX" type="number" value="0">
-                <label for="northDriveToY">Y:</label>
-                <input id="northDriveToY" type="number" value="0">
-                <label for="northDriveToDir">Direction:</label>
-                <select id="northDriveToDir">
+                <label for="[dir]DriveToX">X:</label>
+                <input id="[dir]DriveToX" type="number" value="0">
+                <label for="[dir]DriveToY">Y:</label>
+                <input id="[dir]DriveToY" type="number" value="0">
+                <label for="[dir]DriveToDir">Direction:</label>
+                <select id="[dir]DriveToDir">
                     <option value="-1">Any</option>
                     <option value="3">North</option>
                     <option value="0">East</option>
@@ -81,8 +81,8 @@
             </div>
         </div>
         <div id="signs">
-            <label for="northSign">North</label>
-            <select id="northSign">
+            <label for="[dir]Sign">[Dir]</label>
+            <select id="[dir]Sign">
                 <option value="none" selected>None</option>
                 <option value="stopSign">Stop Sign</option>
                 <option value="streetNameSign">Street Name</option>
